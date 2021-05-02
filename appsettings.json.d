@@ -1,0 +1,7 @@
+﻿{
+  "InfluxDBConfig": 
+  {
+    "User": "",
+    "Password": ""
+  }
+}

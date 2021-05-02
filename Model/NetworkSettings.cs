@@ -12,6 +12,5 @@ namespace NetSim.Model
         public List<NodeSettings> NodeSettings { get; set; }
         public List<ConnectionSettings> ConnectionSettings { get; set; }
         public MessagesSettings MessagesSettings { get; set; }
-        //public List<> NodeSettings { get; set; }
     }
 }

@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="InfluxDB.Collector" Version="1.1.1" />
     <PackageReference Include="InfluxDB.LineProtocol" Version="1.1.1" />
   </ItemGroup>
 

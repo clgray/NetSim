@@ -4,9 +4,9 @@ using System.Text;
 
 namespace NetSim.Lib.Routers
 {
-    public class DijikstraRouter : IRouter
+    public class DijkstraRouter : IRouter
     {
-        public DijikstraRouter()
+        public DijkstraRouter()
         {
             // TODO: get network graph
         }

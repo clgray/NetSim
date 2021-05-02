@@ -6,6 +6,7 @@ namespace NetSim.Model.Node
     public class NodeSettings
     {
         public string Id { get; set; }
+        public string RoutingAlgorithm { get; set; }
         public int Throughput { get; set; }
         public List<ConnectionSettings> Connections { get; set; }
     }
