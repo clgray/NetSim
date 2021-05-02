@@ -6,5 +6,6 @@ namespace NetSim.Repository
 {
     public interface IDBProvider
     {
+        
     }
 }

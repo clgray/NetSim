@@ -6,5 +6,7 @@ namespace NetSim.Lib
 {
     public interface INetworking
     {
+        void StartSimulation();
+        void StopSimulation();
     }
 }
