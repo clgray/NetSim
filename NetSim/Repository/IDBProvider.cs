@@ -5,9 +5,10 @@ using InfluxDB.Collector;
 
 namespace NetSim.Repository
 {
+    // ReSharper disable once InconsistentNaming
     public interface IDBProvider
     {
-        public MetricsCollector GetMetricsCollector();
+        public MetricsCollector GetMetricsCollector(string tag, string type);
 
     }
 }

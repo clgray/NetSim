@@ -23,6 +23,10 @@ namespace NetSim.Providers
         {
             return _nodes.Find(x => x.GetId().Equals(id));
         }
+        public List<INode> GetNodes()
+        {
+            return _nodes;
+        }
 
         private List<INode> CreateNodes()
         {

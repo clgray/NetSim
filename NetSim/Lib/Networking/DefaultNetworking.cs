@@ -5,6 +5,7 @@ using System.Text;
 using System.Xml;
 using NetSim.Model;
 using System.Text.Json;
+using NetSim.Providers;
 
 namespace NetSim.Lib.Networking
 {
@@ -22,7 +23,25 @@ namespace NetSim.Lib.Networking
 
         public void StartSimulation()
         {
-            throw new NotImplementedException();
+            ResourceProvider.InitProviders(_settings);
+
+            var nodes = ResourceProvider.NodeProvider.GetNodes();
+
+            var tag = Guid.NewGuid().ToString();
+            var startTime = DateTime.UtcNow;
+            var currentTime = startTime;
+            var stopSignal = false;
+            
+            for (int i = 0; !stopSignal; i++)
+            {
+                currentTime = startTime.AddSeconds(i);
+
+                foreach (var node in nodes)
+                {
+                    var state = node.Send();
+                }
+                
+            }
         }
 
         public void StopSimulation()
