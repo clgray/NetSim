@@ -5,6 +5,7 @@
 
 # User-specific files
 appsettings.json
+influxdb2/
 *.rsuser
 *.suo
 *.user
