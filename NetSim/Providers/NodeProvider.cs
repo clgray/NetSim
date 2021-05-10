@@ -36,7 +36,7 @@ namespace NetSim.Providers
         // ReSharper disable once MemberCanBeMadeStatic.Local
         private INode CreateNode(NodeSettings nodeSettings)
         {
-            return new IpNode(nodeSettings);
+            return new IpNode(nodeSettings, _settings.TimeDelta);
         }
     }
 }

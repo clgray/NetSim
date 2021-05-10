@@ -14,7 +14,7 @@ namespace NetSim.Providers
         public RouterProvider(NetworkSettings settings)
         {
             _settings = settings; // TBD: routing settings
-            _dijkstra = new DijkstraRouter();
+            _dijkstra = new DijkstraRouter(ResourceProvider.NodeProvider.GetNodes());
         }
 
         public IRouter GetRouter(string routerName)

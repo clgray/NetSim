@@ -8,7 +8,9 @@ namespace NetSim.Model.Message
     {
         public string Data { get; set; }
         public float Size { get; set; }
+        public string StartId { get; set; }
         public string TargetId { get; set; }
+        public List<string> Path { get; set; } = new List<string>();
 
         public MessageState State { get; set; }
     }
@@ -17,6 +19,7 @@ namespace NetSim.Model.Message
     {
         New,
         Received,
-        Sent
+        Sent,
+        Failed
     }
 }

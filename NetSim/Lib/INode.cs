@@ -9,9 +9,10 @@ namespace NetSim.Lib
 {
     public interface INode
     {
-        public State Send();
+        public List<State> Send();
         public State Receive(Message data);
         public string GetId();
+        public List<IConnection> GetConnections();
         public void AddConnection(IConnection connection);
     }
 }

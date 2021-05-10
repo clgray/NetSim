@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using NetSim.Model;
 using NetSim.Model.Message;
 using NetSim.Model.Node;
+using NetSim.Providers;
 
 namespace NetSim.Lib.Nodes
 {
@@ -17,13 +18,17 @@ namespace NetSim.Lib.Nodes
         private readonly NodeSettings _settings;
         private readonly IRouter _router;
         private readonly List<IConnection> _connections;
+        private readonly float _timeDelta;
+        private float waitTimer;
 
-        public IpNode(NodeSettings settings)
+        public IpNode(NodeSettings settings, float timeDelta)
         {
             _settings = settings;
             _connections = new List<IConnection>();
-            // TODO: create _router from settings algorithm a.k.a. fabric
+            _router = ResourceProvider.RouterProvider.GetRouter(_settings.RoutingAlgorithm);
             _messageQueue = new Queue<Message>();
+            _timeDelta = timeDelta;
+            waitTimer = 0;
         }
 
         public IpNode(NodeSettings settings, IEnumerable<Message> messages)
@@ -34,57 +39,92 @@ namespace NetSim.Lib.Nodes
             _messageQueue = new Queue<Message>(messages);
         }
 
-        public State Send()
+        public List<State> Send()
         {
-            var haveMessageToSend = _messageQueue.TryDequeue(out var message);
-
-            if (!haveMessageToSend)
+            if (waitTimer < 0)
             {
-                return new State()
-                {
-                    Message = $"No messages to send",
-                    Node = _settings.Id,
-                    Success = true
-                };
+                waitTimer = 0;
             }
 
-            var nextNode = _router.GetRoute(this, message.TargetId);
-            var connection = GetConnectionToNode(nextNode);
-            var timeSpent = CalculateTime(message);
+            var states = new List<State>();
 
-            if (nextNode != null)
+            while (waitTimer < _timeDelta)
             {
-                var state = connection.Send(message, nextNode);
-                if (!state)
+                var haveMessageToSend = _messageQueue.TryDequeue(out var message);
+                
+                if (!haveMessageToSend)
                 {
-                    return new State()
+                    states.Add(new State()
                     {
-                        Message = $"Message not sent from node {_settings.Id}. Reason: Connection offline",
+                        Message = $"No messages to send",
                         Node = _settings.Id,
-                        Success = false,
-                        TimeSpent = timeSpent
-                    };
+                        Success = true
+                    });
+                    break;
                 }
-                return new State()
+
+                var nextNode = _router.GetRoute(this, message.TargetId);
+                var connection = GetConnectionToNode(nextNode);
+                var timeSpent = CalculateTime(message);
+                waitTimer += timeSpent;
+
+                if (nextNode != null)
                 {
-                    Message = $"Message sent from node {_settings.Id}",
+                    var state = connection.Send(message, nextNode);
+                    message.State = MessageState.Sent; // Enqueue after fail?
+                    if (!state)
+                    {
+                        message.State = MessageState.Failed; // TODO: resent message in case of dead connection
+                        ResourceProvider.MessagesDeliverFailed += 1;
+                        states.Add(new State()
+                        {
+                            Message = $"Message not sent from node. Reason: Connection offline",
+                            Node = _settings.Id,
+                            Success = false,
+                            TimeSpent = timeSpent
+                        });
+                        continue;
+                    }
+                    states.Add(new State()
+                    {
+                        Message = $"Message sent from node",
+                        Node = _settings.Id,
+                        Success = true,
+                        TimeSpent = timeSpent
+                    });
+                    continue;
+                }
+
+                message.State = MessageState.Failed;
+                ResourceProvider.MessagesDeliverFailed += 1;
+                states.Add(new State()
+                {
+                    Message = $"Message not sent from node. Reason: No route",
                     Node = _settings.Id,
-                    Success = true,
+                    Success = false,
                     TimeSpent = timeSpent
-                };
+                });
             }
 
-            return new State()
-            {
-                Message = $"Message not sent from node {_settings.Id}. Reason: No route",
-                Node = _settings.Id,
-                Success = false,
-                TimeSpent = timeSpent
-            };
+            waitTimer -= _timeDelta;
+            return states;
         }
 
         public State Receive(Message data)
         {
+            data.State = MessageState.Received;
+            if (data.TargetId.Equals(_settings.Id))
+            {
+                ResourceProvider.MessagesUnDelivered -= 1;
+                return new State()
+                {
+                    Message = $"Message delivered",
+                    Node = _settings.Id,
+                    Success = true,
+                    TimeSpent = 0
+                };
+            }
+
             _messageQueue.Enqueue(data);
             return new State()
             {
@@ -102,6 +142,11 @@ namespace NetSim.Lib.Nodes
         public void AddConnection(IConnection connection)
         {
             _connections.Add(connection);
+        }        
+        
+        public List<IConnection> GetConnections()
+        {
+            return _connections;
         }
 
         private float CalculateTime(Message message)

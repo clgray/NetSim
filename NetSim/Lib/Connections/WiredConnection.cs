@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using NetSim.Model.Connection;
 using NetSim.Model.Message;
+using NetSim.Providers;
 
 namespace NetSim.Lib.Connections
 {
@@ -21,8 +22,10 @@ namespace NetSim.Lib.Connections
 
         public bool Send(Message data, INode receiver)
         {
+            // TODO: message delay
             if (!IsActive)
             {
+                ResourceProvider.MessagesUnDelivered -= 1;
                 return false;
             }
 
@@ -44,6 +47,11 @@ namespace NetSim.Lib.Connections
         public void Disable()
         {
             IsActive = false;
+        }
+
+        public float GetBandwidth()
+        {
+            return _settings.Bandwidth;
         }
 
         private float CalculateTimeSpent(Message message)

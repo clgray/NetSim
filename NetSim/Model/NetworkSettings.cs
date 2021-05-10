@@ -9,6 +9,7 @@ namespace NetSim.Model
 {
     public class NetworkSettings
     {
+        public float TimeDelta { get; set; }
         public List<NodeSettings> NodeSettings { get; set; }
         public List<ConnectionSettings> ConnectionSettings { get; set; }
         public MessagesSettings MessagesSettings { get; set; }

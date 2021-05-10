@@ -25,7 +25,8 @@ namespace NetSim.Providers
             {
                 var connectedNodes = connectionSettings.NodeIds.Select(nodeId => ResourceProvider.NodeProvider.GetNode(nodeId)).ToList();
 
-                var connection = new WiredConnection(connectionSettings, connectedNodes);
+                // TODO: Connection fabric
+                var connection = new WiredConnection(connectionSettings, connectedNodes); 
 
                 foreach (var node in connectedNodes)
                 {
