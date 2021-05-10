@@ -74,10 +74,10 @@ namespace NetSim.Lib.Routers
             prioQueue.Add(start);
             do
             {
-                prioQueue = prioQueue.OrderByDescending(x => x.MaxBandwidthToStart).ToList();
+                prioQueue = prioQueue.OrderBy(x => x.MaxBandwidthToStart).ToList();
                 var node = prioQueue.First();
                 prioQueue.Remove(node);
-                foreach (var cnn in node.Node.GetConnections().OrderByDescending(x => x.GetBandwidth()))
+                foreach (var cnn in node.Node.GetConnections().OrderBy(x => 1/x.GetBandwidth()))
                 {
                     var childNode = cnn.GetConnectedNodes().ToList().Find(x => !x.Equals(node.Node));
                     var childDijkstraNode = _nodes.Find(x => x.Node.Equals(childNode));
@@ -85,9 +85,13 @@ namespace NetSim.Lib.Routers
                         continue;
                     if (childDijkstraNode!.MaxBandwidthToStart == -1f 
                         ||
-                        node.MaxBandwidthToStart + cnn.GetBandwidth() > childDijkstraNode.MaxBandwidthToStart)
+                        node.MaxBandwidthToStart + 1/cnn.GetBandwidth() < childDijkstraNode.MaxBandwidthToStart)
                     {
-                        childDijkstraNode.MaxBandwidthToStart = node.MaxBandwidthToStart + cnn.GetBandwidth();
+                        if (childDijkstraNode!.MaxBandwidthToStart == -1f)
+                        {
+                            childDijkstraNode!.MaxBandwidthToStart = 0;
+                        }
+                        childDijkstraNode.MaxBandwidthToStart = node.MaxBandwidthToStart + 1/cnn.GetBandwidth();
                         childDijkstraNode.NearestToStart = node;
                         if (!prioQueue.Contains(childDijkstraNode))
                             prioQueue.Add(childDijkstraNode);

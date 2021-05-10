@@ -114,6 +114,7 @@ namespace NetSim.Lib.Nodes
         public State Receive(Message data)
         {
             data.State = MessageState.Received;
+            data.Path.Add(_settings.Id);
             if (data.TargetId.Equals(_settings.Id))
             {
                 ResourceProvider.MessagesUnDelivered -= 1;
