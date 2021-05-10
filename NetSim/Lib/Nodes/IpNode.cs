@@ -19,7 +19,7 @@ namespace NetSim.Lib.Nodes
         private readonly IRouter _router;
         private readonly List<IConnection> _connections;
         private readonly float _timeDelta;
-        private float waitTimer;
+        private float _waitTimer;
 
         public IpNode(NodeSettings settings, float timeDelta)
         {
@@ -28,7 +28,7 @@ namespace NetSim.Lib.Nodes
             _router = ResourceProvider.RouterProvider.GetRouter(_settings.RoutingAlgorithm);
             _messageQueue = new Queue<Message>();
             _timeDelta = timeDelta;
-            waitTimer = 0;
+            _waitTimer = 0;
         }
 
         public IpNode(NodeSettings settings, IEnumerable<Message> messages)
@@ -39,16 +39,16 @@ namespace NetSim.Lib.Nodes
             _messageQueue = new Queue<Message>(messages);
         }
 
-        public List<State> Send()
+        public IEnumerable<State> Send()
         {
-            if (waitTimer < 0)
+            if (_waitTimer < 0)
             {
-                waitTimer = 0;
+                _waitTimer = 0;
             }
 
             var states = new List<State>();
 
-            while (waitTimer < _timeDelta)
+            while (_waitTimer < _timeDelta)
             {
                 var haveMessageToSend = _messageQueue.TryDequeue(out var message);
                 
@@ -64,12 +64,13 @@ namespace NetSim.Lib.Nodes
                 }
 
                 var nextNode = _router.GetRoute(this, message.TargetId);
-                var connection = GetConnectionToNode(nextNode);
                 var timeSpent = CalculateTime(message);
-                waitTimer += timeSpent;
+                _waitTimer += timeSpent;
 
                 if (nextNode != null)
                 {
+                    var connection = GetConnectionToNode(nextNode);
+
                     var state = connection.Send(message, nextNode);
                     message.State = MessageState.Sent; // Enqueue after fail?
                     if (!state)
@@ -106,7 +107,7 @@ namespace NetSim.Lib.Nodes
                 });
             }
 
-            waitTimer -= _timeDelta;
+            _waitTimer -= _timeDelta;
             return states;
         }
 

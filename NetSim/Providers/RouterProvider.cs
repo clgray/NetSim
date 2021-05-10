@@ -14,14 +14,14 @@ namespace NetSim.Providers
         public RouterProvider(NetworkSettings settings)
         {
             _settings = settings; // TBD: routing settings
-            _dijkstra = new DijkstraRouter(ResourceProvider.NodeProvider.GetNodes());
+            _dijkstra = new DijkstraRouter();
         }
 
         public IRouter GetRouter(string routerName)
         {
-            return routerName switch
+            return routerName.ToLower() switch
             {
-                "Dijkstra" => _dijkstra,
+                "dijkstra" => _dijkstra,
                 _ => throw new NotImplementedException()
             };
         }

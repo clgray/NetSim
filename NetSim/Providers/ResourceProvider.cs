@@ -16,9 +16,10 @@ namespace NetSim.Providers
 
         public static void InitProviders(NetworkSettings settings)
         {
+            RouterProvider = new RouterProvider(settings);
             ConnectionProvider = new ConnectionProvider(settings);
             NodeProvider = new NodeProvider(settings);
-            RouterProvider = new RouterProvider(settings);
+            ConnectionProvider.GenerateConnections();
             MessagesDeliverFailed = 0;
             MessagesUnDelivered = settings.MessagesSettings.Quantity;
         }

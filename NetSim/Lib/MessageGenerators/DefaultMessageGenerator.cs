@@ -20,6 +20,10 @@ namespace NetSim.Lib.MessageGenerators
                 var nodeId = nodeIds[rndNodeId];
 
                 var targetNodeId = rnd.Next(nodeIds.Count);
+                while (targetNodeId == rndNodeId)
+                {
+                    targetNodeId = rnd.Next(nodeIds.Count);
+                }
                 var targetId = nodeIds[targetNodeId];
 
                 messages.Add(new Message {Data = i.ToString(), Size = size, State = MessageState.New, TargetId = targetId, StartId = nodeId});

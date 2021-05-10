@@ -10,6 +10,7 @@ namespace NetSim.Lib
     {
         public bool Send(Message data, INode receiver);
         public bool IsConnected(INode node);
+        public IEnumerable<INode> GetConnectedNodes();
         public float GetBandwidth();
         public void Enable();
         public void Disable();

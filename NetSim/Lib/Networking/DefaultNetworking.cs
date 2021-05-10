@@ -39,7 +39,7 @@ namespace NetSim.Lib.Networking
 
             var tag = Guid.NewGuid().ToString();
             var startTime = DateTime.UtcNow;
-            var currentTime = startTime; // TODO: metrics logging
+            var currentTime = startTime.AddSeconds(0); // TODO: metrics logging
             var stopSignal = false;
 
             for (int i = 0; !stopSignal; i++)
@@ -66,8 +66,8 @@ namespace NetSim.Lib.Networking
         private NetworkSettings ReadNetworkSettings()
         {
             var json = File.ReadAllText(_configPath);
-            var settings = JsonSerializer.Deserialize<NetworkSettings>(json);
-            return settings;
+            var settings = JsonSerializer.Deserialize<Settings>(json);
+            return settings.NetworkSettings;
         }
 
         private void InitNetwork()

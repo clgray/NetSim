@@ -18,6 +18,7 @@ namespace NetSim.Lib.Connections
         {
             _settings = settings;
             _connectedNodes = connectedNodes;
+            IsActive = true;
         }
 
         public bool Send(Message data, INode receiver)
@@ -32,6 +33,11 @@ namespace NetSim.Lib.Connections
             var timeSpent = CalculateTimeSpent(data); // TODO collect metrics
             receiver.Receive(data);
             return true;
+        }
+
+        public IEnumerable<INode> GetConnectedNodes()
+        {
+            return _connectedNodes;
         }
 
         public bool IsConnected(INode node)

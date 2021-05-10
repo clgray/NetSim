@@ -16,7 +16,6 @@ namespace NetSim.Providers
         {
             _settings = settings;
             _nodes = CreateNodes();
-            ResourceProvider.ConnectionProvider.GenerateConnections();
         }
 
         public INode GetNode(string id)

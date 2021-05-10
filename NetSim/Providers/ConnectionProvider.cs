@@ -9,12 +9,12 @@ namespace NetSim.Providers
     public class ConnectionProvider
     {
         private readonly NetworkSettings _settings;
-        private readonly List<IConnection> _connections;
+        private List<IConnection> _connections;
 
         public ConnectionProvider(NetworkSettings settings)
         {
             _settings = settings;
-            _connections = GenerateConnections();
+            //_connections = GenerateConnections();
         }
 
         public List<IConnection> GenerateConnections()
@@ -36,6 +36,7 @@ namespace NetSim.Providers
                 connections.Add(connection);
             }
 
+            _connections = connections;
             return connections;
         }
 
