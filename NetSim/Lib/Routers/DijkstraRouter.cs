@@ -45,6 +45,11 @@ namespace NetSim.Lib.Routers
 
             shortestPath.Reverse();
 
+            if (shortestPath.Count() <= 1)
+            {
+                return null;
+            }
+
             // skipping start nodes
             return shortestPath.Skip(1).First().Node;
         }

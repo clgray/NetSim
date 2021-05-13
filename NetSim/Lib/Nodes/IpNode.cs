@@ -48,6 +48,12 @@ namespace NetSim.Lib.Nodes
 
             var states = new List<State>();
 
+            var nodeMetrics = new NodeMetrics()
+            {
+                MessagesInQueue = _messageQueue.Count,
+                Throughput = _settings.Throughput
+            };
+
             while (_waitTimer < _timeDelta)
             {
                 var haveMessageToSend = _messageQueue.TryDequeue(out var message);
@@ -107,7 +113,17 @@ namespace NetSim.Lib.Nodes
                 });
             }
 
+            nodeMetrics.MessagesSent = nodeMetrics.MessagesInQueue - _messageQueue.Count;
+            nodeMetrics.Load = _waitTimer / _timeDelta;
+            // TODO: log metrics
+
             _waitTimer -= _timeDelta;
+
+            foreach (var connection in _connections)
+            {
+                connection.ProgressQueue();
+            }
+
             return states;
         }
 

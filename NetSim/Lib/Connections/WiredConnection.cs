@@ -11,13 +11,25 @@ namespace NetSim.Lib.Connections
     {
         private readonly ConnectionSettings _settings;
         private readonly List<INode> _connectedNodes;
+        private readonly Queue<MessageData> _queue;
+        private readonly float _timeDelta;
+        private float _waitTimer;
         private bool IsActive { get; set; }
+
+        private class MessageData
+        {
+            public INode Receiver { get; set; }
+            public float Delay { get; set; }
+            public Message Message { get; set; }
+        }
         
 
-        public WiredConnection(ConnectionSettings settings, List<INode> connectedNodes)
+        public WiredConnection(ConnectionSettings settings, List<INode> connectedNodes, float timeDelta)
         {
             _settings = settings;
             _connectedNodes = connectedNodes;
+            _queue = new Queue<MessageData>();
+            _timeDelta = timeDelta;
             IsActive = true;
         }
 
@@ -31,8 +43,54 @@ namespace NetSim.Lib.Connections
             }
 
             var timeSpent = CalculateTimeSpent(data); // TODO collect metrics
-            receiver.Receive(data);
+
+            _queue.Enqueue(new MessageData()
+            {
+                Delay = timeSpent,
+                Message = data,
+                Receiver = receiver
+            });
+
+            // receiver.Receive(data);
             return true;
+        }
+
+        public void ProgressQueue()
+        {
+            if (!IsActive)
+            {
+                return;
+            }
+
+            if (_waitTimer < 0)
+            {
+                _waitTimer = 0;
+            }
+
+            while (_waitTimer < _timeDelta)
+            {
+                var dataToTransmit = _queue.TryDequeue(out var data);
+
+                if (!dataToTransmit)
+                {
+                    break;
+                }
+
+                _waitTimer += data.Delay;
+                var capacity = _timeDelta - _waitTimer < 0 ? 0 : _timeDelta - _waitTimer;
+                
+                data.Delay -= capacity;
+                if (data.Delay <= 0)
+                {
+                    data.Receiver.Receive(data.Message);
+                    continue;
+                }
+
+                // Should split available bandwidth equally between all messages
+                _queue.Enqueue(data);
+            }
+
+            _waitTimer -= _timeDelta;
         }
 
         public IEnumerable<INode> GetConnectedNodes()
