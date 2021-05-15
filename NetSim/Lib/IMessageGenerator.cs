@@ -7,6 +7,6 @@ namespace NetSim.Lib
 {
     public interface IMessageGenerator
     {
-        List<Message> GenerateMessages(MessagesSettings settings, List<string> nodeIds);
+        List<Message> GenerateMessages(MessagesSettings settings, List<string> nodeIds, DateTime time);
     }
 }

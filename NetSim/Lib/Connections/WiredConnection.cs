@@ -35,7 +35,6 @@ namespace NetSim.Lib.Connections
 
         public bool Send(Message data, INode receiver)
         {
-            // TODO: message delay
             if (!IsActive)
             {
                 ResourceProvider.MessagesUnDelivered -= 1;
@@ -55,7 +54,7 @@ namespace NetSim.Lib.Connections
             return true;
         }
 
-        public void ProgressQueue()
+        public void ProgressQueue(DateTime currentTime)
         {
             if (!IsActive)
             {
@@ -66,6 +65,15 @@ namespace NetSim.Lib.Connections
             {
                 _waitTimer = 0;
             }
+
+            var connectionMetrics = new ConnectionMetrics()
+            {
+                MessagesInQueue = _queue.Count,
+                Throughput = _settings.Bandwidth,
+                Time = currentTime,
+                Connection = string.Join( '-', _settings.NodeIds),
+                Tag = ResourceProvider.Tag
+            };
 
             while (_waitTimer < _timeDelta)
             {
@@ -89,6 +97,11 @@ namespace NetSim.Lib.Connections
                 // Should split available bandwidth equally between all messages
                 _queue.Enqueue(data);
             }
+
+            connectionMetrics.MessagesSent = connectionMetrics.MessagesInQueue - _queue.Count;
+            connectionMetrics.Load = _waitTimer / _timeDelta;
+
+            ResourceProvider.MetricsLogger.WriteConnectionMetrics(connectionMetrics);
 
             _waitTimer -= _timeDelta;
         }

@@ -11,12 +11,12 @@ namespace NetSim.Providers
     {
         private readonly NetworkSettings _settings;
         private readonly DijkstraRouter _dijkstra;
-        private readonly BFSRouter _bfs;
+        private readonly DFSRouter _dfs;
         public RouterProvider(NetworkSettings settings)
         {
             _settings = settings; // TBD: routing settings
             _dijkstra = new DijkstraRouter();
-            _bfs = new BFSRouter();
+            _dfs = new DFSRouter();
         }
 
         public IRouter GetRouter(string routerName)
@@ -24,7 +24,7 @@ namespace NetSim.Providers
             return routerName.ToLower() switch
             {
                 "dijkstra" => _dijkstra,
-                "bfs" => _bfs,
+                "dfs" => _dfs,
                 _ => throw new NotImplementedException()
             };
         }

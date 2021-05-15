@@ -7,6 +7,7 @@ using System.Text;
 using System.Xml;
 using NetSim.Model;
 using System.Text.Json;
+using NetSim.Model.Message;
 using NetSim.Providers;
 
 namespace NetSim.Lib.Networking
@@ -22,40 +23,39 @@ namespace NetSim.Lib.Networking
             _configPath = configPath;
             _messageGenerator = messageGenerator;
             _settings = ReadNetworkSettings();
-            InitNetwork();
         }
 
         public void StartSimulation()
         {
+            var tag = Guid.NewGuid().ToString();
+            var startTime = DateTime.UtcNow;
+            var currentTime = startTime.AddSeconds(0); 
+            var stopSignal = false;
+
+            InitNetwork(tag);
+
             var nodes = ResourceProvider.NodeProvider.GetNodes();
             var nodesIds = nodes.Select(x => x.GetId()).ToList();
 
-            var messages = _messageGenerator.GenerateMessages(_settings.MessagesSettings, nodesIds);
-            foreach (var message in messages)
-            {
-                var node = nodes.Find(x => x.GetId().Equals(message.StartId));
-                node!.Receive(message);
-            }
-
-            var tag = Guid.NewGuid().ToString();
-            var startTime = DateTime.UtcNow;
-            var currentTime = startTime.AddSeconds(0); // TODO: metrics logging
-            var stopSignal = false;
+            var messages = GenerateMessages(nodesIds, currentTime, nodes);
 
             for (int i = 0; !stopSignal; i++)
             {
-                currentTime = startTime.AddSeconds(i);
+                currentTime = startTime.AddSeconds(i*_settings.TimeDelta);
 
                 foreach (var node in nodes)
                 {
-                    var states = node.Send();
+                    var states = node.Send(currentTime);
                 }
 
                 if (ResourceProvider.MessagesUnDelivered == 0)
                 {
                     stopSignal = true;
                 }
+
             }
+
+            ResourceProvider.MetricsLogger.WriteMessageMetrics(messages);
         }
 
         public void StopSimulation()
@@ -67,12 +67,25 @@ namespace NetSim.Lib.Networking
         {
             var json = File.ReadAllText(_configPath);
             var settings = JsonSerializer.Deserialize<Settings>(json);
-            return settings.NetworkSettings;
+            return settings!.NetworkSettings;
         }
 
-        private void InitNetwork()
+        private List<Message> GenerateMessages(List<string> nodesIds, DateTime currentTime, List<INode> nodes)
         {
-            ResourceProvider.InitProviders(_settings);
+            var messages = _messageGenerator.GenerateMessages(_settings.MessagesSettings, nodesIds, currentTime);
+
+            foreach (var message in messages)
+            {
+                var node = nodes.Find(x => x.GetId().Equals(message.StartId));
+                node!.Receive(message);
+            }
+
+            return messages;
+        }
+
+        private void InitNetwork(string tag)
+        {
+            ResourceProvider.InitProviders(_settings, tag);
         }
     }
 }

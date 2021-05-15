@@ -39,7 +39,7 @@ namespace NetSim.Lib.Nodes
             _messageQueue = new Queue<Message>(messages);
         }
 
-        public IEnumerable<State> Send()
+        public IEnumerable<State> Send(DateTime currentTime)
         {
             if (_waitTimer < 0)
             {
@@ -51,7 +51,10 @@ namespace NetSim.Lib.Nodes
             var nodeMetrics = new NodeMetrics()
             {
                 MessagesInQueue = _messageQueue.Count,
-                Throughput = _settings.Throughput
+                Throughput = _settings.Throughput,
+                Time = currentTime,
+                Id = GetId(),
+                Tag = ResourceProvider.Tag
             };
 
             while (_waitTimer < _timeDelta)
@@ -71,6 +74,7 @@ namespace NetSim.Lib.Nodes
 
                 var nextNode = _router.GetRoute(this, message.TargetId);
                 var timeSpent = CalculateTime(message);
+                message.TimeSpent += timeSpent;
                 _waitTimer += timeSpent;
 
                 if (nextNode != null)
@@ -81,7 +85,7 @@ namespace NetSim.Lib.Nodes
                     message.State = MessageState.Sent; // Enqueue after fail?
                     if (!state)
                     {
-                        message.State = MessageState.Failed; // TODO: resent message in case of dead connection
+                        message.State = MessageState.Failed; // TODO: resent message in case of dead Connection
                         ResourceProvider.MessagesDeliverFailed += 1;
                         states.Add(new State()
                         {
@@ -115,13 +119,14 @@ namespace NetSim.Lib.Nodes
 
             nodeMetrics.MessagesSent = nodeMetrics.MessagesInQueue - _messageQueue.Count;
             nodeMetrics.Load = _waitTimer / _timeDelta;
-            // TODO: log metrics
+            
+            ResourceProvider.MetricsLogger.WriteNodeMetrics(nodeMetrics);
 
             _waitTimer -= _timeDelta;
 
             foreach (var connection in _connections)
             {
-                connection.ProgressQueue();
+                connection.ProgressQueue(currentTime);
             }
 
             return states;

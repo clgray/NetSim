@@ -8,15 +8,13 @@ namespace NetSim.Model.Message
     {
         public string Data { get; set; }
         public float Size { get; set; }
+        public float TimeSpent { get; set; } = 0;
+        public DateTime Time { get; set; }
         public string StartId { get; set; }
         public string TargetId { get; set; }
         public List<string> Path { get; set; } = new List<string>();
 
         public MessageState State { get; set; }
-        //public MessageMetrics Metrics { get; set; } = new MessageMetrics()
-        //{
-        //    Received = false,
-        //};
     }
 
     public enum MessageState

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using InfluxDB.Client;
 using InfluxDB.Collector;
 
 namespace NetSim.Repository
@@ -9,6 +10,8 @@ namespace NetSim.Repository
     public interface IDBProvider
     {
         public MetricsCollector GetMetricsCollector(string tag, string type);
+        public WriteApiAsync GetWriteApi();
+
 
     }
 }

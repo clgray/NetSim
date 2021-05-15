@@ -12,7 +12,7 @@ namespace NetSim.Lib
         public bool IsConnected(INode node);
         public IEnumerable<INode> GetConnectedNodes();
         public float GetBandwidth();
-        public void ProgressQueue();
+        public void ProgressQueue(DateTime currentTime);
         public void Enable();
         public void Disable();
     }

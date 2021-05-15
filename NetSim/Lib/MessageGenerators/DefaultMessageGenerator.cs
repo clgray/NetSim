@@ -7,7 +7,7 @@ namespace NetSim.Lib.MessageGenerators
 {
     public class DefaultMessageGenerator : IMessageGenerator
     {
-        public List<Message> GenerateMessages(MessagesSettings settings, List<string> nodeIds)
+        public List<Message> GenerateMessages(MessagesSettings settings, List<string> nodeIds, DateTime time)
         {
             var rnd = new Random(settings.Seed);
             var messages = new List<Message>();
@@ -26,7 +26,7 @@ namespace NetSim.Lib.MessageGenerators
                 }
                 var targetId = nodeIds[targetNodeId];
 
-                messages.Add(new Message {Data = i.ToString(), Size = size, State = MessageState.New, TargetId = targetId, StartId = nodeId});
+                messages.Add(new Message {Data = i.ToString(), Size = size, State = MessageState.New, TargetId = targetId, StartId = nodeId, Time = time});
             }
 
             return messages;

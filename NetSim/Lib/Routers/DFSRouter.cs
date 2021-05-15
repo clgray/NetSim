@@ -8,11 +8,11 @@ using NetSim.Providers;
 
 namespace NetSim.Lib.Routers
 {
-    public class BFSRouter : IRouter
+    public class DFSRouter : IRouter
     {
-        private List<BFSNode> _nodes;
+        private List<DFSNode> _nodes;
 
-        public BFSRouter()
+        public DFSRouter()
         {
         
         }
@@ -37,7 +37,7 @@ namespace NetSim.Lib.Routers
             return path[1];
         }
 
-        private List<INode> Search(BFSNode node, string targetId)
+        private List<INode> Search(DFSNode node, string targetId)
         {
             if (node.IsVisited)
             {
@@ -71,25 +71,25 @@ namespace NetSim.Lib.Routers
 
         private void ResetState()
         {
-            foreach (var bfsNode in _nodes)
+            foreach (var dfsNode in _nodes)
             {
-                bfsNode.IsVisited = false;
+                dfsNode.IsVisited = false;
             }
         }
 
 
         private void SetNodes()
         {
-            _nodes = ResourceProvider.NodeProvider.GetNodes().Select(x => new BFSNode(x)).ToList();
+            _nodes = ResourceProvider.NodeProvider.GetNodes().Select(x => new DFSNode(x)).ToList();
         }
     }
 
-    internal class BFSNode
+    internal class DFSNode
     {
         public INode Node { get; set; }
         public bool IsVisited { get; set; }
 
-        public BFSNode(INode node)
+        public DFSNode(INode node)
         {
             Node = node;
         }

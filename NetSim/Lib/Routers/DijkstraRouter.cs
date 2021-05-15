@@ -126,10 +126,10 @@ namespace NetSim.Lib.Routers
         //                value = 1f;
         //            }
 
-        //            var connection = connections.Find(x => x.IsConnected(node));
-        //            if (connection != null)
+        //            var Connection = connections.Find(x => x.IsConnected(node));
+        //            if (Connection != null)
         //            {
-        //                value = connection.GetBandwidth();
+        //                value = Connection.GetBandwidth();
         //            }
 
         //            row.Add(value);

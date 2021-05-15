@@ -9,7 +9,7 @@ namespace NetSim.Lib
 {
     public interface INode
     {
-        public IEnumerable<State> Send();
+        public IEnumerable<State> Send(DateTime currentTime);
         public State Receive(Message data);
         public string GetId();
         public List<IConnection> GetConnections();
