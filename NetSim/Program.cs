@@ -22,6 +22,7 @@ namespace NetSim
             }
             var network = new DefaultNetworking(path, new DefaultMessageGenerator());
             network.StartSimulation();
+            Console.WriteLine("Симуляция завершена");
         }
     }
 }
