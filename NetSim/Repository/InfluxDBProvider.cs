@@ -41,7 +41,11 @@ namespace NetSim.Repository
             _client = InfluxDBClientFactory.Create(options);
         }
 
-        public WriteApiAsync GetWriteApi()
+        public WriteApi GetWriteApi()
+        {
+            return _client.GetWriteApi();
+        }
+        public WriteApiAsync GetWriteApiAsync()
         {
             return _client.GetWriteApiAsync();
         }

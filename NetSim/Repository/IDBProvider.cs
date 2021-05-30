@@ -10,7 +10,8 @@ namespace NetSim.Repository
     public interface IDBProvider
     {
         public MetricsCollector GetMetricsCollector(string tag, string type);
-        public WriteApiAsync GetWriteApi();
+        public WriteApiAsync GetWriteApiAsync();
+        public WriteApi GetWriteApi();
 
 
     }

@@ -17,13 +17,15 @@ namespace NetSim.Lib
     public class MetricsLogger
     {
         private readonly IDBProvider _provider;
-        private readonly WriteApiAsync _writeApi;
+        private readonly WriteApi _writeApi;
+        private readonly WriteApiAsync _writeApiAsync;
         private List<Task> _tasks;
 
         public MetricsLogger(IDBProvider dbProvider)
         {
             _provider = dbProvider;
             _writeApi = dbProvider.GetWriteApi();
+            _writeApiAsync = dbProvider.GetWriteApiAsync();
             _tasks = new List<Task>();
         }
 
@@ -42,22 +44,25 @@ namespace NetSim.Lib
             }).ToList();
 
             //var writeApi = _provider.GetWriteApi();
-            var task = _writeApi.WriteMeasurementsAsync(WritePrecision.S, messageMetrics);
+            var task = _writeApiAsync.WriteMeasurementsAsync(WritePrecision.S, messageMetrics);
             _tasks.Add(task);
+            Task.WaitAll(_tasks.ToArray());
         }
 
         public void WriteNodeMetrics(NodeMetrics nodeMetrics)
         {
             //var writeApi = _provider.GetWriteApi();
-            var task = _writeApi.WriteMeasurementAsync(WritePrecision.S, nodeMetrics);
-            _tasks.Add(task);
+            //var task = _writeApi.WriteMeasurementAsync(WritePrecision.S, nodeMetrics);
+            _writeApi.WriteMeasurement(WritePrecision.S, nodeMetrics);
+            //_tasks.Add(task);
+            //task.Wait();
         }
 
         public void WriteConnectionMetrics(ConnectionMetrics connectionMetrics)
         {
             //var writeApi = _provider.GetWriteApi();
-            _writeApi.WriteMeasurementAsync(WritePrecision.S, connectionMetrics).Wait();
-            Task.WaitAll(_tasks.ToArray());
+            _writeApi.WriteMeasurement(WritePrecision.S, connectionMetrics);
+            //_tasks.Add(task);
         }
     }
 }
