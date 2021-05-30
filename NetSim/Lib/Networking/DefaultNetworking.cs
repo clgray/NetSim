@@ -56,7 +56,7 @@ namespace NetSim.Lib.Networking
             }
 
             ResourceProvider.MetricsLogger.WriteMessageMetrics(messages);
-            Console.Write(tag);
+            Console.WriteLine(tag);
         }
 
         public void StopSimulation()
