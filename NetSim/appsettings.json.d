@@ -22,9 +22,9 @@
       }
     ],
     "MessagesSettings": {
-      "Quantity": 10,
+      "Quantity": 100000,
       "Size": 1,
-      "SizeRange": 0,
+      "SizeRange": 499,
       "Seed": 1000
     }
   }

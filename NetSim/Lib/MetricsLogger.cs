@@ -18,11 +18,13 @@ namespace NetSim.Lib
     {
         private readonly IDBProvider _provider;
         private readonly WriteApiAsync _writeApi;
+        private List<Task> _tasks;
 
         public MetricsLogger(IDBProvider dbProvider)
         {
             _provider = dbProvider;
             _writeApi = dbProvider.GetWriteApi();
+            _tasks = new List<Task>();
         }
 
         public void WriteMessageMetrics(IEnumerable<Message> messages)
@@ -40,19 +42,22 @@ namespace NetSim.Lib
             }).ToList();
 
             //var writeApi = _provider.GetWriteApi();
-            _writeApi.WriteMeasurementsAsync(WritePrecision.S, messageMetrics).Wait();
+            var task = _writeApi.WriteMeasurementsAsync(WritePrecision.S, messageMetrics);
+            _tasks.Add(task);
         }
 
         public void WriteNodeMetrics(NodeMetrics nodeMetrics)
         {
             //var writeApi = _provider.GetWriteApi();
-            _writeApi.WriteMeasurementAsync(WritePrecision.S, nodeMetrics).Wait();
+            var task = _writeApi.WriteMeasurementAsync(WritePrecision.S, nodeMetrics);
+            _tasks.Add(task);
         }
 
         public void WriteConnectionMetrics(ConnectionMetrics connectionMetrics)
         {
             //var writeApi = _provider.GetWriteApi();
             _writeApi.WriteMeasurementAsync(WritePrecision.S, connectionMetrics).Wait();
+            Task.WaitAll(_tasks.ToArray());
         }
     }
 }
