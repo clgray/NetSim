@@ -29,7 +29,7 @@ namespace NetSim.Lib.Networking
         {
             var tag = Guid.NewGuid().ToString();
             var startTime = DateTime.Parse("2021-05-01 04:00:00").ToUniversalTime();
-            var currentTime = startTime.AddSeconds(0); 
+            var currentTime = startTime.AddSeconds(0);
             var stopSignal = false;
 
             InitNetwork(tag);
@@ -41,7 +41,7 @@ namespace NetSim.Lib.Networking
 
             for (int i = 0; !stopSignal; i++)
             {
-                currentTime = startTime.AddSeconds(i*_settings.TimeDelta);
+                currentTime = startTime.AddSeconds(i * _settings.TimeDelta);
 
                 foreach (var node in nodes)
                 {
@@ -57,6 +57,12 @@ namespace NetSim.Lib.Networking
 
             ResourceProvider.MetricsLogger.WriteMessageMetrics(messages);
             Console.WriteLine(tag);
+            var count = messages.Count;
+            var averageTime = messages.Select(x => x.TimeSpent).Aggregate((x, y) => x + y) / count;
+            var averageSize = messages.Select(x => x.Size).Aggregate((x, y) => x + y) / count;
+            Console.WriteLine($"Среднее время для доставки сообщения: {averageTime}");
+            Console.WriteLine($"Средний размер сообщения: {averageSize}");
+
         }
 
         public void StopSimulation()
