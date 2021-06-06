@@ -28,7 +28,7 @@ namespace NetSim.Lib.Networking
         public void StartSimulation()
         {
             var tag = Guid.NewGuid().ToString();
-            var startTime = DateTime.Parse("2021-05-01 04:00:00").ToUniversalTime();
+            var startTime = DateTime.Parse("2021-06-01 04:00:00").ToUniversalTime();
             var currentTime = startTime.AddSeconds(0);
             var stopSignal = false;
 
