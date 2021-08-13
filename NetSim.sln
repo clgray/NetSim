@@ -10,7 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "InfluxDB", "InfluxDB", "{FA
 		docker-compose.yml = docker-compose.yml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetSimTests", "NetSimTests\NetSimTests.csproj", "{54729219-C4DB-491A-910A-CEBABB17F39B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetCreator", "NetworkSettingsCreator\NetworkSettingsCreator.csproj", "{3D347005-4B66-4F5D-89AB-363B52A63629}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,10 +22,10 @@ Global
 		{36CF6746-D71C-42A9-81AE-5B149D2592D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{36CF6746-D71C-42A9-81AE-5B149D2592D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{36CF6746-D71C-42A9-81AE-5B149D2592D1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{54729219-C4DB-491A-910A-CEBABB17F39B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{54729219-C4DB-491A-910A-CEBABB17F39B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{54729219-C4DB-491A-910A-CEBABB17F39B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{54729219-C4DB-491A-910A-CEBABB17F39B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D347005-4B66-4F5D-89AB-363B52A63629}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D347005-4B66-4F5D-89AB-363B52A63629}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D347005-4B66-4F5D-89AB-363B52A63629}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D347005-4B66-4F5D-89AB-363B52A63629}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

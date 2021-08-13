@@ -1,0 +1,31 @@
+﻿{
+	"TimeDelta": 60,
+	"NetworkType": "random",
+	"NodesCount": 1000,
+	"NodeConfiguration": {
+		"RoutingAlgorithm": "dijkstra",
+		"Throughput": {
+			"Min": 2000,
+			"Max": 2000
+		},
+		"ConnectionsRange": {
+			"Min": 2,
+			"Max": 5
+		}
+	},
+	"ConnectionConfiguration": {
+		"Bandwidth": {
+			"Min": 1000,
+			"Max": 2000
+		},
+		"TimeUntilShutdown": 0
+	},
+	"MessagesConfiguration": {
+		"Quantity": 1000000,
+		"Size": {
+			"Min": 1,
+			"Max": 500
+		},
+		"Seed": 1000
+	}
+}

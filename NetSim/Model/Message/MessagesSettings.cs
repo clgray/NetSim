@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace NetSim.Model.Message
+﻿namespace NetSim.Model.Message
 {
     public class MessagesSettings
     {
         public int Quantity { get; set; }
-        public int Size { get; set; }
-        public int SizeRange { get; set; }
+        public int MinSize { get; set; }
+        public int MaxSize { get; set; }
         public int Seed { get; set; }
     }
 }
