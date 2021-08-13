@@ -9,6 +9,5 @@ namespace NetSim.Model
     public class Settings
     {
         public InfluxDBConfig InfluxDBConfig { get; set; }
-        public NetworkSettings NetworkSettings { get; set; }
     }
 }
