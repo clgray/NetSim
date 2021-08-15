@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Dynamic;
 using System.Reflection.Metadata;
 using System.Runtime.Serialization;
@@ -108,6 +109,7 @@ namespace NetSim.Lib.Nodes
 
                 message.State = MessageState.Failed;
                 ResourceProvider.MessagesDeliverFailed += 1;
+                ResourceProvider.MessagesUnDelivered -= 1;
                 states.Add(new State()
                 {
                     Message = $"Message not sent from node. Reason: No route",
@@ -116,11 +118,12 @@ namespace NetSim.Lib.Nodes
                     TimeSpent = timeSpent
                 });
             }
+            
 
             nodeMetrics.MessagesSent = nodeMetrics.MessagesInQueue - _messageQueue.Count;
             nodeMetrics.Load = _waitTimer / _timeDelta;
             
-            ResourceProvider.MetricsLogger.WriteNodeMetrics(nodeMetrics);
+            ResourceProvider.MetricsLogger.CollectNodeMetrics(nodeMetrics);
 
             _waitTimer -= _timeDelta;
 
