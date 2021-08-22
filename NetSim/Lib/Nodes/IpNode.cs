@@ -52,16 +52,17 @@ namespace NetSim.Lib.Nodes
 
             var nodeMetrics = new NodeMetrics()
             {
-                MessagesInQueue = _messageQueue.Count(x => x.State != MessageState.Received),
+                //MessagesInQueue = _messageQueue.Count(x => x.State != MessageState.Received),
+                MessagesInQueue = _messageQueue.Count,
                 Throughput = _settings.Throughput,
                 Time = currentTime,
                 Id = GetId(),
                 Tag = ResourceProvider.Tag
             };
-            foreach (var message in _messageQueue.ToList())
-            {
-                message.State = MessageState.New;
-            }
+            //foreach (var message in _messageQueue.ToList())
+            //{
+            //    message.State = MessageState.New;
+            //}
 
 
             while (_waitTimer < _timeDelta)
@@ -127,6 +128,7 @@ namespace NetSim.Lib.Nodes
             
 
             nodeMetrics.MessagesSent = nodeMetrics.MessagesInQueue - _messageQueue.Count;
+            nodeMetrics.MessagesInQueue = _messageQueue.Count;
             nodeMetrics.Load = _waitTimer / _timeDelta;
             if (nodeMetrics.Load > 1)
             {
