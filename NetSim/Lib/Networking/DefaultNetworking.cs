@@ -40,6 +40,8 @@ namespace NetSim.Lib.Networking
                 {
                     var states = node.Send(currentTime);
                 }
+                ResourceProvider.MetricsLogger.WriteConnectionMetrics();
+                ResourceProvider.MetricsLogger.WriteNodeMetrics();
 
                 if (ResourceProvider.MessagesUnDelivered == 0)
                 {
@@ -49,6 +51,7 @@ namespace NetSim.Lib.Networking
             }
 
             ResourceProvider.MetricsLogger.WriteMessageMetrics(messages);
+
             Console.WriteLine(tag);
             var count = messages.Count;
             var averageTime = messages.Select(x => x.TimeSpent).Aggregate((x, y) => x + y) / count;

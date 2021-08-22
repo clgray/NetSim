@@ -20,5 +20,11 @@ namespace NetSim.Model.Message
         public DateTime Time { get; set; }
         [Column("tag", IsTag = true)]
         public string Tag { get; set; }
+
+        public override string ToString()
+        {
+            var str = $"{data},{Size},{TimeSpent},{Path},{Received},{Time}";
+            return str;
+        }
     }
 }
