@@ -26,7 +26,7 @@ namespace NetSim.Lib.MessageGenerators
                 }
                 var targetId = nodeIds[targetNodeId];
 
-                messages.Add(new Message {Data = i.ToString(), Size = size, State = MessageState.New, TargetId = targetId, StartId = nodeId, Time = time});
+                messages.Add(new Message {Data = i.ToString(), Size = size, State = MessageState.New, TargetId = targetId, StartId = nodeId, StartTime = time});
             }
 
             return messages;

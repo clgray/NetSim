@@ -22,7 +22,7 @@ namespace NetSim.Lib.Networking
         {
             var tag = Guid.NewGuid().ToString();
             var startTime = DateTime.Parse("2021-06-01 04:00:00").ToUniversalTime();
-            var currentTime = startTime.AddSeconds(0);
+            ResourceProvider.CurrentTime = startTime;
             var stopSignal = false;
 
             InitNetwork(tag);
@@ -30,18 +30,20 @@ namespace NetSim.Lib.Networking
             var nodes = ResourceProvider.NodeProvider.GetNodes();
             var nodesIds = nodes.Select(x => x.GetId()).ToList();
 
-            var messages = GenerateMessages(nodesIds, currentTime, nodes);
+            List<Message> messages= new List<Message>(); 
 
             for (int i = 0; !stopSignal; i++)
             {
-                currentTime = startTime.AddSeconds(i * _settings.TimeDelta);
-
+	            messages.AddRange(GenerateMessages(nodesIds, ResourceProvider.CurrentTime, nodes));
+	            ResourceProvider.CurrentTime = startTime.AddSeconds(i * _settings.TimeDelta);
                 foreach (var node in nodes)
                 {
-                    var states = node.Send(currentTime);
+                    var states = node.Send(ResourceProvider.CurrentTime);
                 }
                 ResourceProvider.MetricsLogger.WriteConnectionMetrics();
                 ResourceProvider.MetricsLogger.WriteNodeMetrics();
+                ResourceProvider.MetricsLogger.WriteMessageMetrics(messages);
+                messages = messages.Where(x => x.State != MessageState.Delivered).ToList();
 
                 if (ResourceProvider.MessagesUnDelivered == 0)
                 {
@@ -50,7 +52,7 @@ namespace NetSim.Lib.Networking
 
             }
 
-            ResourceProvider.MetricsLogger.WriteMessageMetrics(messages);
+            //ResourceProvider.MetricsLogger.WriteMessageMetrics(messages);
 
             Console.WriteLine(tag);
             var count = messages.Count;
@@ -75,7 +77,7 @@ namespace NetSim.Lib.Networking
                 var node = nodes.Find(x => x.GetId().Equals(message.StartId));
                 node!.Receive(message);
             }
-
+            ResourceProvider.MessagesUnDelivered += messages.Count;
             return messages;
         }
 

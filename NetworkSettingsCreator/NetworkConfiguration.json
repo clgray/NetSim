@@ -1,7 +1,7 @@
 ﻿{
-	"TimeDelta": 60,
+	"TimeDelta": 1,
 	"NetworkType": "random",
-	"NodesCount": 1000,
+	"NodesCount": 100,
 	"NodeConfiguration": {
 		"RoutingAlgorithm": "dijkstra",
 		"Throughput": {
@@ -21,7 +21,7 @@
 		"TimeUntilShutdown": 0
 	},
 	"MessagesConfiguration": {
-		"Quantity": 1000000,
+		"Quantity": 100000,
 		"Size": {
 			"Min": 1,
 			"Max": 500

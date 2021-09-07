@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -32,25 +33,32 @@ namespace NetSim.Lib.Loggers
         }
         public void WriteMessageMetrics(IEnumerable<Message> messages)
         {
-            var messageMetrics = messages.Select(x => new MessageMetrics()
-            {
-                Received = (x.State == MessageState.Received),
-                Size = x.Size,
-                Path = string.Join('|', x.Path),
-                TimeSpent = x.TimeSpent,
-                Time = x.Time.AddSeconds(x.TimeSpent),
-                data = x.Data,
-                Tag = ResourceProvider.Tag
+            //var messageMetrics = messages.Select(x => new MessageMetrics()
+            //{
+            //    State = x.State.ToString(),
+            //    Size = x.Size,
+            //    Path = string.Join('|', x.Path),
+            //    TimeSpent = x.TimeSpent,
+            //    Time = x.Time.AddSeconds(x.TimeSpent),
+            //    data = x.Data,
+            //    Tag = ResourceProvider.Tag
 
-            }.ToString()).ToList();
+            //}.ToString()).ToList();
 
-            var metrics = string.Join('\n', messageMetrics);
+            //var metrics = string.Join('\n', messageMetrics);
 
-            //File.WriteAllText($"{LogPath}/{FilePrefix}Message-Metrics-{Tag}", metrics);
-            using (var sw = new StreamWriter($"{LogPath}/{FilePrefix}Message-Metrics-{Tag}", true))
-            {
-                sw.WriteLine(metrics);
-            }
+            ////File.WriteAllText($"{LogPath}/{FilePrefix}Message-Metrics-{Tag}", metrics);
+            //using (var sw = new StreamWriter($"{LogPath}/{FilePrefix}Message-Metrics-{Tag}", true))
+            //{
+            //    sw.WriteLine(metrics);
+            //}
+            var load = string.Join(',', messages
+	            .Where(x=>x.State == MessageState.Delivered)
+	            .Select(x => (x.DeliveredTime-x.StartTime)
+		            .TotalMilliseconds
+		            .ToString(CultureInfo.InvariantCulture)));
+            using var sw = new StreamWriter($"{LogPath}/{FilePrefix}Message-Metrics-TimeSpent-{Tag}", true);
+            sw.WriteLine(load);
         }
 
         public void WriteNodeMetrics()
@@ -64,7 +72,7 @@ namespace NetSim.Lib.Loggers
                 sw.WriteLine(messagesInQueue);
             }
 
-            var load = string.Join(',', _nodeMetrics.Select(x => x.Load));
+            var load = string.Join(',', _nodeMetrics.Select(x => x.Load.ToString(CultureInfo.InvariantCulture)));
             //File.AppendAllText($"{LogPath}/{FilePrefix}Node-Metrics-load-{Tag}", load);
             using (var sw = new StreamWriter($"{LogPath}/{FilePrefix}Node-Metrics-load-{Tag}", true))
             {
@@ -84,7 +92,7 @@ namespace NetSim.Lib.Loggers
                 sw.WriteLine(messagesInQueue);
             }
 
-            var load = string.Join(',', _connectionMetrics.Select(x => x.Load));
+            var load = string.Join(',', _connectionMetrics.Select(x => x.Load.ToString(CultureInfo.InvariantCulture)));
             //File.AppendAllText($"{LogPath}/{FilePrefix}Connection-Metrics-load-{Tag}", load);
             using (var sw = new StreamWriter($"{LogPath}/{FilePrefix}Connection-Metrics-load-{Tag}", true))
             {

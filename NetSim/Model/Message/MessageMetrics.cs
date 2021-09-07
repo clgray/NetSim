@@ -15,7 +15,7 @@ namespace NetSim.Model.Message
         [Column("path")]
         public string Path { get; set; }
         [Column("received")]
-        public bool Received { get; set; }
+        public string State { get; set; }
         [Column("time", IsTimestamp = true)]
         public DateTime Time { get; set; }
         [Column("tag", IsTag = true)]
@@ -23,7 +23,7 @@ namespace NetSim.Model.Message
 
         public override string ToString()
         {
-            var str = $"{data},{Size},{TimeSpent},{Path},{Received},{Time}";
+            var str = $"{data},{Size},{TimeSpent},{Path},{State},{Time}";
             return str;
         }
     }

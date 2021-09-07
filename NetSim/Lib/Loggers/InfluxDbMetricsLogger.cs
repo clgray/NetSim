@@ -30,14 +30,13 @@ namespace NetSim.Lib
         {
             var messageMetrics = messages.Select(x => new MessageMetrics()
             {
-                Received = (x.State == MessageState.Received),
+                State = MessageState.Received.ToString(),
                 Size = x.Size,
                 Path = string.Join('|', x.Path),
                 TimeSpent = x.TimeSpent,
-                Time = x.Time.AddSeconds(x.TimeSpent),
+                Time = x.StartTime.AddSeconds(x.TimeSpent),
                 data = x.Data,
                 Tag = ResourceProvider.Tag
-
             }).ToList();
 
             //var writeApi = _provider.GetWriteApi();

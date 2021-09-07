@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using InfluxDB.Collector;
 using NetSim.Lib;
 using NetSim.Lib.Loggers;
@@ -19,6 +20,8 @@ namespace NetSim.Providers
         public static int MessagesUnDelivered { get; set; }
         public static int MessagesDeliverFailed { get; set; }
 
+        public static DateTime CurrentTime { get; set; }
+
         public static string Tag { get; set; }
 
 
@@ -35,7 +38,7 @@ namespace NetSim.Providers
             //InfluxDbMetricsLogger = new InfluxDbMetricsLogger(dbProvider);
 
             MessagesDeliverFailed = 0;
-            MessagesUnDelivered = settings.MessagesSettings.Quantity;
+            //MessagesUnDelivered = settings.MessagesSettings.Quantity;
         }
     }
 }

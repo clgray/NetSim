@@ -142,6 +142,8 @@ namespace NetSim.Lib.Nodes
             if (data.TargetId.Equals(_settings.Id))
             {
                 ResourceProvider.MessagesUnDelivered -= 1;
+                data.State = MessageState.Delivered;
+                data.DeliveredTime = ResourceProvider.CurrentTime;
                 return new State()
                 {
                     Message = $"Message delivered",
