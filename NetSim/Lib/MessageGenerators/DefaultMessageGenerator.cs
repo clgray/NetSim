@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using NetSim.Model;
 using NetSim.Model.Message;
 
 namespace NetSim.Lib.MessageGenerators
 {
     public class DefaultMessageGenerator : IMessageGenerator
     {
-        public List<Message> GenerateMessages(MessagesSettings settings, List<string> nodeIds, DateTime time)
+        private List<Message> GenerateMessages(MessagesSettings settings, List<string> nodeIds, DateTime time)
         {
             var rnd = new Random(settings.Seed);
             var messages = new List<Message>();
@@ -30,6 +31,21 @@ namespace NetSim.Lib.MessageGenerators
             }
 
             return messages;
+        }
+
+        public List<Message> Init(MessagesSettings settings, List<string> nodeIds, DateTime time)
+        {
+            return GenerateMessages(settings, nodeIds, time);
+        }
+
+        public List<Message> GenerateMessages(DateTime time)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool GenerateInProgress()
+        {
+            return false;
         }
     }
 }

@@ -35,7 +35,7 @@ namespace NetSim.Providers
             //InfluxDbMetricsLogger = new InfluxDbMetricsLogger(dbProvider);
 
             MessagesDeliverFailed = 0;
-            MessagesUnDelivered = settings.MessagesSettings.Quantity;
+            MessagesUnDelivered = 0;
         }
     }
 }

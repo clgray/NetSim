@@ -19,7 +19,7 @@ namespace NetSim
 
             var json = File.ReadAllText(path);
             var networkSettings = JsonSerializer.Deserialize<NetworkSettings>(json);
-            var network = new DefaultNetworking(networkSettings, new DefaultMessageGenerator());
+            var network = new DefaultNetworking(networkSettings, new ConstantMessageGenerator());
             network.StartSimulation();
             Console.WriteLine("Симуляция завершена");
         }
