@@ -99,7 +99,12 @@ namespace NetSim.Lib.Connections
             }
 
             connectionMetrics.MessagesSent = connectionMetrics.MessagesInQueue - _queue.Count;
+            connectionMetrics.MessagesInQueue = _queue.Count;
             connectionMetrics.Load = _waitTimer / _timeDelta;
+            if (connectionMetrics.Load > 1)
+            {
+                connectionMetrics.Load = 1;
+            }
 
             ResourceProvider.MetricsLogger.CollectConnectionMetrics(connectionMetrics);
 
