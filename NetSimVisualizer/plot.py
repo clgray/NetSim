@@ -3,7 +3,7 @@ import numpy as np
 
 
 log_dir_path = "./Logs"
-log_tag = "2824027b-8670-432b-bf8c-68b1ac68a020"
+log_tag = "49dd78b5-1ad8-40ac-a65a-c60f24ffda50"
 
 files = [
     {"filename": f"Netsim-Node-Metrics-queue-{log_tag}", "title": "Node: Messages in queue average"},

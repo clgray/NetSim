@@ -9,14 +9,13 @@ namespace NetSim.Lib.Routers
     public class DijkstraRouter : IRouter
     {
         private List<DijkstraNode> _nodes;
-        //private readonly List<List<float>> _graph;
 
         public DijkstraRouter()
         {
             
         }
 
-        public DijkstraRouter(List<INode> nodes)
+        public DijkstraRouter(IEnumerable<INode> nodes)
         {
             _nodes = nodes.Select(x => new DijkstraNode(x)).ToList();
             //_graph = GenerateGraphMatrix(nodes);
@@ -75,8 +74,7 @@ namespace NetSim.Lib.Routers
         private void DijkstraSearch(DijkstraNode start, DijkstraNode end)
         {
             start.MaxBandwidthToStart = 0;
-            var prioQueue = new List<DijkstraNode>();
-            prioQueue.Add(start);
+            var prioQueue = new List<DijkstraNode> {start};
             do
             {
                 prioQueue = prioQueue.OrderBy(x => x.MaxBandwidthToStart).ToList();
@@ -108,37 +106,6 @@ namespace NetSim.Lib.Routers
             } while (prioQueue.Any());
         }
 
-        //private List<List<float>> GenerateGraphMatrix(IReadOnlyList<INode> nodes)
-        //{
-        //    var graph = new List<List<float>>();
-
-        //    for (int i = 0; i < nodes.Count; i++)
-        //    {
-        //        var row = new List<float>();
-        //        var connections = nodes[i].GetConnections();
-        //        for (int j = 0; j < nodes.Count; j++)
-        //        {
-        //            var value = 0f;
-        //            var node = nodes[j];
-
-        //            if (i == j)
-        //            {
-        //                value = 1f;
-        //            }
-
-        //            var Connection = connections.Find(x => x.IsConnected(node));
-        //            if (Connection != null)
-        //            {
-        //                value = Connection.GetBandwidth();
-        //            }
-
-        //            row.Add(value);
-        //        }
-        //        graph.Add(row);
-        //    }
-        //    // TODO: check this shit
-        //    return graph;
-        //}
     }
 
     internal class DijkstraNode

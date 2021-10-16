@@ -19,8 +19,8 @@ namespace NetSim.Lib.Loggers
         private string FilePrefix { get; }
         private string LogPath { get; }
 
-        private List<NodeMetrics> _nodeMetrics;
-        private List<ConnectionMetrics> _connectionMetrics;
+        private readonly List<NodeMetrics> _nodeMetrics;
+        private readonly List<ConnectionMetrics> _connectionMetrics;
 
         public CsvMetricsLogger(string tag, string logPath=".", string filePrefix = "Netsim-")
         {
@@ -46,7 +46,7 @@ namespace NetSim.Lib.Loggers
 
             var metrics = string.Join('\n', messageMetrics);
 
-            //File.WriteAllText($"{LogPath}/{FilePrefix}Message-Metrics-{Tag}", metrics);
+
             using (var sw = new StreamWriter($"{LogPath}/{FilePrefix}Message-Metrics-{Tag}", true))
             {
                 sw.WriteLine(metrics);
@@ -58,14 +58,14 @@ namespace NetSim.Lib.Loggers
             //var ids = string.Join(',', _nodeMetrics.Select(x => x.Id));
 
             var messagesInQueue = string.Join(',', _nodeMetrics.Select(x => x.MessagesInQueue));
-            //File.AppendAllText($"{LogPath}/{FilePrefix}Node-Metrics-queue-{Tag}", messagesInQueue);
+
             using (var sw = new StreamWriter($"{LogPath}/{FilePrefix}Node-Metrics-queue-{Tag}", true))
             {
                 sw.WriteLine(messagesInQueue);
             }
 
             var load = string.Join(',', _nodeMetrics.Select(x => x.Load));
-            //File.AppendAllText($"{LogPath}/{FilePrefix}Node-Metrics-load-{Tag}", load);
+
             using (var sw = new StreamWriter($"{LogPath}/{FilePrefix}Node-Metrics-load-{Tag}", true))
             {
                 sw.WriteLine(load);
@@ -78,14 +78,14 @@ namespace NetSim.Lib.Loggers
             //var ids = string.Join(',', _connectionMetrics.Select(x => x.Connection));
 
             var messagesInQueue = string.Join(',', _connectionMetrics.Select(x => x.MessagesInQueue));
-            //File.AppendAllText($"{LogPath}/{FilePrefix}Connection-Metrics-queue-{Tag}", messagesInQueue);
+
             using (var sw = new StreamWriter($"{LogPath}/{FilePrefix}Connection-Metrics-queue-{Tag}", true))
             {
                 sw.WriteLine(messagesInQueue);
             }
 
             var load = string.Join(',', _connectionMetrics.Select(x => x.Load));
-            //File.AppendAllText($"{LogPath}/{FilePrefix}Connection-Metrics-load-{Tag}", load);
+
             using (var sw = new StreamWriter($"{LogPath}/{FilePrefix}Connection-Metrics-load-{Tag}", true))
             {
                 sw.WriteLine(load);

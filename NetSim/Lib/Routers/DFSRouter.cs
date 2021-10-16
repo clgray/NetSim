@@ -10,6 +10,10 @@ namespace NetSim.Lib.Routers
 {
     public class DFSRouter : IRouter
     {
+        /// <summary>
+        /// Needs cache to work properly
+        /// TODO: Implement cache
+        /// </summary>
         private List<DFSNode> _nodes;
 
         public DFSRouter()

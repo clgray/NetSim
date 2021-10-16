@@ -11,11 +11,13 @@ namespace NetSim.Lib.Networking
     {
         private readonly NetworkSettings _settings;
         private readonly IMessageGenerator _messageGenerator;
+        private List<Message> MessagesTotal;
 
         public DefaultNetworking(NetworkSettings networkSettings, IMessageGenerator messageGenerator)
         {
             _messageGenerator = messageGenerator;
             _settings = networkSettings;
+            MessagesTotal = new List<Message>();
         }
 
         public void StartSimulation()
@@ -30,9 +32,11 @@ namespace NetSim.Lib.Networking
             var nodes = ResourceProvider.NodeProvider.GetNodes();
             var nodesIds = nodes.Select(x => x.GetId()).ToList();
 
-            var messages = GenerateMessages(nodesIds, currentTime, nodes);
+            var messages = GenerateMessagesInit(nodesIds, currentTime, nodes);
+            MessagesTotal.AddRange(messages);
+            ResourceProvider.MessagesUnDelivered += messages.Count;
 
-            for (int i = 0; !stopSignal; i++)
+            for (var i = 0; !stopSignal; i++)
             {
                 currentTime = startTime.AddSeconds(i * _settings.TimeDelta);
 
@@ -42,6 +46,8 @@ namespace NetSim.Lib.Networking
                 }
                 ResourceProvider.MetricsLogger.WriteConnectionMetrics();
                 ResourceProvider.MetricsLogger.WriteNodeMetrics();
+
+                IterationEnd(currentTime, nodes);
 
                 if (ResourceProvider.MessagesUnDelivered == 0)
                 {
@@ -66,17 +72,41 @@ namespace NetSim.Lib.Networking
             throw new NotImplementedException();
         }
 
-        private List<Message> GenerateMessages(List<string> nodesIds, DateTime currentTime, List<INode> nodes)
+        private List<Message> GenerateMessagesInit(List<string> nodesIds, DateTime currentTime, List<INode> nodes)
         {
-            var messages = _messageGenerator.GenerateMessages(_settings.MessagesSettings, nodesIds, currentTime);
+            var messages = _messageGenerator.Init(_settings.MessagesSettings, nodesIds, currentTime);
 
+            DistributeMessages(messages, nodes);
+
+            return messages;
+        }
+
+        private List<Message> GenerateMessages(DateTime currentTime, List<INode> nodes)
+        {
+            var messages = _messageGenerator.GenerateMessages(currentTime);
+
+            DistributeMessages(messages, nodes);
+
+            return messages;
+        }
+
+        private void DistributeMessages(IEnumerable<Message> messages, List<INode> nodes)
+        {
             foreach (var message in messages)
             {
                 var node = nodes.Find(x => x.GetId().Equals(message.StartId));
                 node!.Receive(message);
             }
+        }
 
-            return messages;
+        private void IterationEnd(DateTime time, List<INode> nodes)
+        {
+            if (_messageGenerator.GenerateInProgress())
+            {
+                var messages = GenerateMessages(time, nodes);
+                MessagesTotal.AddRange(messages);
+                ResourceProvider.MessagesUnDelivered += messages.Count;
+            }
         }
 
         private void InitNetwork(string tag)
