@@ -199,10 +199,10 @@ namespace NetSim.Lib.Nodes
                 return false;
             }
 
-            if (connectionLoad > threshold)
-            {
-                return false;
-            }
+            //if (connectionLoad > threshold)
+            //{
+            //    return false;
+            //}
 
             return true;
         }
