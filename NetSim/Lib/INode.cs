@@ -14,5 +14,6 @@ namespace NetSim.Lib
         public string GetId();
         public List<IConnection> GetConnections();
         public void AddConnection(IConnection connection);
+        public bool IsAvailable();
     }
 }

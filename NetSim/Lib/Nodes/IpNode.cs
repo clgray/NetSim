@@ -68,7 +68,7 @@ namespace NetSim.Lib.Nodes
             while (_waitTimer < _timeDelta)
             {
                 var haveMessageToSend = _messageQueue.TryDequeue(out var message);
-                
+
                 if (!haveMessageToSend)
                 {
                     states.Add(new State()
@@ -125,7 +125,7 @@ namespace NetSim.Lib.Nodes
                     TimeSpent = timeSpent
                 });
             }
-            
+
 
             nodeMetrics.MessagesSent = nodeMetrics.MessagesInQueue - _messageQueue.Count;
             nodeMetrics.MessagesInQueue = _messageQueue.Count;
@@ -134,7 +134,7 @@ namespace NetSim.Lib.Nodes
             {
                 nodeMetrics.Load = 1;
             }
-            
+
             ResourceProvider.MetricsLogger.CollectNodeMetrics(nodeMetrics);
 
             _waitTimer -= _timeDelta;
@@ -180,8 +180,30 @@ namespace NetSim.Lib.Nodes
         public void AddConnection(IConnection connection)
         {
             _connections.Add(connection);
-        }        
-        
+        }
+
+        public bool IsAvailable()
+        {
+            // move to settings maybe
+            var threshold = 0.8;
+            var nodeLoad = _waitTimer / _timeDelta;
+
+            // Average load for connections
+            var connectionLoad = _connections.Aggregate(0.0, (current, connection) => current + connection.GetLoad()) / _connections.Count;
+
+            if (nodeLoad > threshold)
+            {
+                return false;
+            }
+
+            if (connectionLoad > threshold)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public List<IConnection> GetConnections()
         {
             return _connections;
@@ -189,7 +211,7 @@ namespace NetSim.Lib.Nodes
 
         private float CalculateTime(Message message)
         {
-            return message.Size/_settings.Throughput;
+            return message.Size / _settings.Throughput;
         }
 
         private IConnection GetConnectionToNode(INode node)

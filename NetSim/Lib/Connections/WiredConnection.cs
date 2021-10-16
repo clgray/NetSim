@@ -54,6 +54,11 @@ namespace NetSim.Lib.Connections
             return true;
         }
 
+        public float GetLoad()
+        {
+            return _waitTimer / _timeDelta;
+        }
+
         public void ProgressQueue(DateTime currentTime)
         {
             if (!IsActive)
