@@ -176,12 +176,19 @@ namespace NetSim.Lib.Routers
 
                 foreach (var cnn in node.Node.GetConnections().OrderBy(x => 1 / x.GetBandwidth()))
                 {
+                    // Check if connection are overloaded
+                    if (cnn.GetLoad() > 0.8)
+                    {
+                        continue;
+                    }
+
                     var childNode = cnn.GetConnectedNodes().ToList().Find(x => !x.Equals(node.Node));
                     var childDijkstraNode = _nodes.Find(x => x.Node.Equals(childNode));
 
                     if (childDijkstraNode!.IsVisited)
                         continue;
 
+                    // Check if Node are overloaded
                     if (!childDijkstraNode.Node.IsAvailable())
                     {
                         continue;

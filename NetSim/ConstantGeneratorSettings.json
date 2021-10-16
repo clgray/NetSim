@@ -1,4 +1,4 @@
 ﻿{
   "NumberOfGenerations": 2,
-  "MessagesToGenerateOnInit": 10000 
+  "MessagesToGenerateOnInit": 100000 
 }

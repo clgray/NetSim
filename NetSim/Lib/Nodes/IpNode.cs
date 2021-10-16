@@ -22,6 +22,7 @@ namespace NetSim.Lib.Nodes
         private readonly List<IConnection> _connections;
         private readonly float _timeDelta;
         private float _waitTimer;
+        private float _load;
 
         public IpNode(NodeSettings settings, float timeDelta)
         {
@@ -126,10 +127,11 @@ namespace NetSim.Lib.Nodes
                 });
             }
 
+            _load = _waitTimer / _timeDelta;
 
             nodeMetrics.MessagesSent = nodeMetrics.MessagesInQueue - _messageQueue.Count;
             nodeMetrics.MessagesInQueue = _messageQueue.Count;
-            nodeMetrics.Load = _waitTimer / _timeDelta;
+            nodeMetrics.Load = _load;
             if (nodeMetrics.Load > 1)
             {
                 nodeMetrics.Load = 1;
@@ -186,20 +188,21 @@ namespace NetSim.Lib.Nodes
         {
             // move to settings maybe
             var threshold = 0.8;
-            var nodeLoad = _waitTimer / _timeDelta;
+            var nodeLoad = _load;
 
             // Average load for connections
-            var connectionLoad = _connections.Aggregate(0.0, (current, connection) => current + connection.GetLoad()) / _connections.Count;
+            // var connectionLoad = _connections.Aggregate(0.0, (current, connection) => current + connection.GetLoad()) / _connections.Count;
+            var connectionLoad = _connections.Max(x => x.GetLoad());
 
             if (nodeLoad > threshold)
             {
                 return false;
             }
 
-            if (connectionLoad > threshold)
-            {
-                return false;
-            }
+            //if (connectionLoad > threshold)
+            //{
+            //    return false;
+            //}
 
             return true;
         }
