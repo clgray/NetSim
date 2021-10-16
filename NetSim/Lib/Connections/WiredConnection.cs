@@ -14,6 +14,7 @@ namespace NetSim.Lib.Connections
         private readonly Queue<MessageData> _queue;
         private readonly float _timeDelta;
         private float _waitTimer;
+        private float _load;
         private bool IsActive { get; set; }
 
         private class MessageData
@@ -56,7 +57,7 @@ namespace NetSim.Lib.Connections
 
         public float GetLoad()
         {
-            return _waitTimer / _timeDelta;
+            return _load;
         }
 
         public void ProgressQueue(DateTime currentTime)
@@ -103,9 +104,11 @@ namespace NetSim.Lib.Connections
                 _queue.Enqueue(data);
             }
 
+            _load = _waitTimer / _timeDelta;
+
             connectionMetrics.MessagesSent = connectionMetrics.MessagesInQueue - _queue.Count;
             connectionMetrics.MessagesInQueue = _queue.Count;
-            connectionMetrics.Load = _waitTimer / _timeDelta;
+            connectionMetrics.Load = _load;
             if (connectionMetrics.Load > 1)
             {
                 connectionMetrics.Load = 1;
