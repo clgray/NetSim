@@ -56,7 +56,7 @@ namespace NetSim.Lib.Networking
 
             }
 
-            ResourceProvider.MetricsLogger.WriteMessageMetrics(messages);
+            ResourceProvider.MetricsLogger.WriteMessageMetrics(MessagesTotal);
 
             Console.WriteLine(tag);
             var count = messages.Count;
