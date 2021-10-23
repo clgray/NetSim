@@ -81,7 +81,7 @@ namespace NetSim.Lib.Nodes
                     break;
                 }
 
-                var nextNode = _router.GetRoute(this, message.TargetId);
+                var nextNode = _router.GetRoute(this, message.TargetId, message);
                 var timeSpent = CalculateTime(message);
                 message.TimeSpent += timeSpent;
                 _waitTimer += timeSpent;
