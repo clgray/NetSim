@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NetSim.Model.Message;
 using NetSim.Providers;
 
 namespace NetSim.Lib.Routers
@@ -9,30 +10,38 @@ namespace NetSim.Lib.Routers
     public class DijkstraRouter : IRouter
     {
         private List<DijkstraNode> _nodes;
+        private DijkstraRouterHelper _helper;
+
 
         public DijkstraRouter()
         {
-            
+            _helper = new DijkstraRouterHelper();
         }
 
         public DijkstraRouter(IEnumerable<INode> nodes)
         {
+            _helper = new DijkstraRouterHelper();
             _nodes = nodes.Select(x => new DijkstraNode(x)).ToList();
         }
 
-        public INode GetRoute(INode currentNode, string targetId)
+        public INode GetRoute(INode currentNode, string targetId, Message message)
         {
-            var node = GetRouteWithAvailability(currentNode, targetId);
+            var node = GetRouteWithAvailability(currentNode, targetId, message);
             if (node is null)
             {
-                return GetRouteDefault(currentNode, targetId);
+                return GetRouteDefault(currentNode, targetId, message);
+            }
+            else
+            {
+                // Saved path isn't relevant anymore
+                _helper.DeletePathForMessage(message);
             }
 
             return node;
         }
 
         // TODO: need refactoring
-        private INode GetRouteDefault(INode currentNode, string targetId)
+        private INode GetRouteDefault(INode currentNode, string targetId, Message message)
         {
             if (_nodes == null)
             {
@@ -41,6 +50,12 @@ namespace NetSim.Lib.Routers
 
             var start = _nodes.Find(x => x.Node.Equals(currentNode));
             var destination = _nodes.Find(x => x.Node.GetId().Equals(targetId));
+
+            var nodeFromSavedPath = _helper.GetNextNodeFromSavedPath(message, start);
+            if (nodeFromSavedPath != null)
+            {
+                return nodeFromSavedPath;
+            }
 
             DijkstraSearch(start, destination);
             var shortestPath = new List<DijkstraNode> { destination };
@@ -60,19 +75,25 @@ namespace NetSim.Lib.Routers
                 return null;
             }
 
+            _helper.SavePath(message, shortestPath);
+
             // skipping start nodes
             return shortestPath.Skip(1).First().Node;
         }
 
-        private INode GetRouteWithAvailability(INode currentNode, string targetId)
+        private INode GetRouteWithAvailability(INode currentNode, string targetId, Message message)
         {
             if (_nodes == null)
             {
                 SetNodes();
             }
 
+            SetVisitedNodes(message);
+
             var start = _nodes.Find(x => x.Node.Equals(currentNode));
             var destination = _nodes.Find(x => x.Node.GetId().Equals(targetId));
+
+            start.IsVisited = false;
 
             DijkstraSearchWithAvailability(start, destination);
             var shortestPath = new List<DijkstraNode> { destination };
@@ -220,6 +241,15 @@ namespace NetSim.Lib.Routers
                     return;
                 }
             } while (prioQueue.Any());
+        }
+
+        private void SetVisitedNodes(Message message)
+        {
+            foreach (var nodeId in message.Path)
+            {
+                var node = _nodes.Find(x => x.Node.GetId().Equals(nodeId));
+                node.IsVisited = true;
+            }
         }
     }
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualBasic.FileIO;
+using NetSim.Model.Message;
 using NetSim.Providers;
 
 namespace NetSim.Lib.Routers
@@ -21,7 +22,7 @@ namespace NetSim.Lib.Routers
         
         }
 
-        public INode GetRoute(INode currentNode, string targetId)
+        public INode GetRoute(INode currentNode, string targetId, Message message)
         {
             if (_nodes == null)
             {
