@@ -64,7 +64,7 @@ namespace NetSim.Lib.MessageGenerators
 
             for (int i = 0; i < quantity; i++)
             {
-                var size = Math.Abs(rnd.Next(_settings.MinSize, _settings.MinSize + _settings.MaxSize));
+                var size = Math.Abs(rnd.Next(_settings.MinSize, _settings.MaxSize));
 
                 var rndNodeId = rnd.Next(_nodeIds.Count);
                 var nodeId = _nodeIds[rndNodeId];

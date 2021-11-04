@@ -68,7 +68,7 @@ namespace NetworkSettingsCreator.NetCreator
 
 		private int GetRandomFromRange(Range range)
 		{
-			return _rnd.Next((int) range.Min, (int) (range.Min + range.Max));
+			return _rnd.Next((int) range.Min, (int) (range.Max));
 		}
 	}
 }

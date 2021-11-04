@@ -28,7 +28,7 @@ namespace NetworkSettingsCreator.Model
 				do
 				{
 					nodeB = GetRandomNode(nodes, configuration.NodeConfiguration.ConnectionsRange.Max);
-				} while (nodeA.Connections.Any(c => c.Nodes.Contains(nodeB)));
+				} while (nodeA.Connections.Any(c => c.Nodes.Contains(nodeB)) || nodeA == nodeB);
 
 				connection.Nodes = new List<Node> {nodeA, nodeB};
 				nodeA.Connections.Add(connection);
