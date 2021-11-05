@@ -8,16 +8,16 @@ using EdgeList = System.Collections.Generic.List<(int node, double weight)>;
 
 namespace NetSim.Lib.Routers
 {
-	public class Dijkstra : IRouter
+	public class DijkstraRouter2 : IRouter
 	{
 		private Graph _graph;
 
-		public Dijkstra(INode[] net)
+		public DijkstraRouter2(INode[] net)
 		{
 			SetNodes(net);
 		}
 
-		public Dijkstra()
+		public DijkstraRouter2()
 		{
 		}
 
