@@ -3,13 +3,14 @@ import numpy as np
 
 
 log_dir_path = "./Logs"
-log_tag = "49dd78b5-1ad8-40ac-a65a-c60f24ffda50"
+log_tag = "1c31102e-2b4e-4cca-b4c3-b51c599ec245"
 
 files = [
     {"filename": f"Netsim-Node-Metrics-queue-{log_tag}", "title": "Node: Messages in queue average"},
     {"filename": f"Netsim-Node-Metrics-load-{log_tag}", "title": "Node: Load average"},
     {"filename": f"Netsim-Connection-Metrics-queue-{log_tag}", "title": "Connection: Messages in queue average"},
     {"filename": f"Netsim-Connection-Metrics-load-{log_tag}", "title": "Connection: Load average"},
+    {"filename": f"Netsim-Message-Metrics-failed-{log_tag}", "title": "Message: failed"},
 ]
 
 

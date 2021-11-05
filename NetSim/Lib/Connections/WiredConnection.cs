@@ -15,6 +15,7 @@ namespace NetSim.Lib.Connections
         private readonly float _timeDelta;
         private float _waitTimer;
         private float _load;
+        private int _messageInQueueCount;
         private bool IsActive { get; set; }
 
         private class MessageData
@@ -32,6 +33,7 @@ namespace NetSim.Lib.Connections
             _queue = new Queue<MessageData>();
             _timeDelta = timeDelta;
             IsActive = true;
+            _messageInQueueCount = 0;
         }
 
         public bool Send(Message data, INode receiver)
@@ -42,7 +44,7 @@ namespace NetSim.Lib.Connections
                 return false;
             }
 
-            var timeSpent = CalculateTimeSpent(data); // TODO collect metrics
+            var timeSpent = CalculateTimeSpent(data);
 
             _queue.Enqueue(new MessageData()
             {
@@ -78,7 +80,8 @@ namespace NetSim.Lib.Connections
                 Throughput = _settings.Bandwidth,
                 Time = currentTime,
                 Connection = string.Join( '-', _settings.NodeIds),
-                Tag = ResourceProvider.Tag
+                Tag = ResourceProvider.Tag,
+                MessagesReceived = _queue.Count - _messageInQueueCount
             };
 
             while (_waitTimer < _timeDelta)
@@ -105,9 +108,10 @@ namespace NetSim.Lib.Connections
             }
 
             _load = _waitTimer / _timeDelta;
+            _messageInQueueCount = _queue.Count;
 
-            connectionMetrics.MessagesSent = connectionMetrics.MessagesInQueue - _queue.Count;
-            connectionMetrics.MessagesInQueue = _queue.Count;
+            connectionMetrics.MessagesSent = connectionMetrics.MessagesInQueue - _messageInQueueCount;
+            connectionMetrics.MessagesInQueue = _messageInQueueCount;
             connectionMetrics.Load = _load;
             if (connectionMetrics.Load > 1)
             {

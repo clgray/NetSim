@@ -18,6 +18,8 @@ namespace NetSim.Lib.Routers
 				{
 					var weight = 1;
 
+                    var nodeMetrics = neighbour.GetNodeState();
+
 					if (!neighbour.IsAvailable())
 						weight = 10000;
 

@@ -26,6 +26,7 @@ namespace NetSim.Lib.Networking
             var startTime = DateTime.Parse("2021-06-01 04:00:00").ToUniversalTime();
             var currentTime = startTime.AddSeconds(0);
             var stopSignal = false;
+            var currentFailedMessages = 0;
 
             InitNetwork(tag);
 
@@ -44,9 +45,12 @@ namespace NetSim.Lib.Networking
                 foreach (var node in nodes)
                 {
                     var states = node.Send(currentTime);
-                   
                 }
+
+                var messagesFailedCurrentIteration = ResourceProvider.MessagesDeliverFailed - currentFailedMessages;
+                currentFailedMessages = ResourceProvider.MessagesDeliverFailed;
                 
+                ResourceProvider.MetricsLogger.WriteFailedMessagesCount(messagesFailedCurrentIteration);
                 ResourceProvider.MetricsLogger.WriteConnectionMetrics();
                 ResourceProvider.MetricsLogger.WriteNodeMetrics();
 
@@ -62,10 +66,12 @@ namespace NetSim.Lib.Networking
             ResourceProvider.MetricsLogger.WriteMessageMetrics(MessagesTotal);
 
             Console.WriteLine(tag);
-            var count = messages.Count;
-            var averageTime = messages.Select(x => x.TimeSpent).Aggregate((x, y) => x + y) / count;
-            var averageSize = messages.Select(x => x.Size).Aggregate((x, y) => x + y) / count;
+            var count = MessagesTotal.Count;
+            var averageTime = MessagesTotal.Select(x => x.TimeSpent).Aggregate((x, y) => x + y) / count;
+            var averageSize = MessagesTotal.Select(x => x.Size).Aggregate((x, y) => x + y) / count;
             Console.WriteLine($"Среднее время для доставки сообщения: {averageTime}");
+            Console.WriteLine($"Сообщений всего: {MessagesTotal.Count}");
+            Console.WriteLine($"Сообщений не доставлено: {ResourceProvider.MessagesDeliverFailed}");
             Console.WriteLine($"Средний размер сообщения: {averageSize}");
 
         }
