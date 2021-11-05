@@ -8,20 +8,11 @@ using EdgeList = System.Collections.Generic.List<(int node, double weight)>;
 
 namespace NetSim.Lib.Routers
 {
-	public class DijkstraRouter2 : IRouter
+	public abstract class DijkstraRouterBase : IRouter
 	{
-		private Graph _graph;
+		protected Graph _graph;
 
-		public DijkstraRouter2(INode[] net)
-		{
-			SetNodes(net);
-		}
-
-		public DijkstraRouter2()
-		{
-		}
-
-
+		
 		public int[] FindPath(int startNode, int endNode)
 		{
 			var path = _graph.FindPath(startNode);
@@ -65,31 +56,8 @@ namespace NetSim.Lib.Routers
 			SetNodes(net);
 		}
 
-		private void SetNodes(IReadOnlyCollection<INode> net)
-		{
-			_graph = new Graph(net.Count());
-			foreach (var node in net)
-			{
-				var neighbours = node
-					.GetConnections()
-					.SelectMany(x => x.GetConnectedNodes()
-						.Where(x => !x.Equals(node)));
-				foreach (var neighbour in neighbours)
-				{
-					var weight = 1;
-
-					if (!neighbour.IsAvailable())
-						weight = 10000;
-
-					var connection = node.GetConnections().First(x => x.GetConnectedNodes().Any(x => x == neighbour));
-
-					if (connection.GetLoad() > 0.9)
-						weight = 10000;
-
-					_graph.AddEdge(int.Parse(node.GetId()), int.Parse(neighbour.GetId()), weight);
-				}
-			}
-		}
+		protected abstract void SetNodes(IReadOnlyCollection<INode> net);
+		
 
 
 		IEnumerable<(double distance, int node)> Path((double distance, int prev)[] path, int start, int destination)
@@ -101,7 +69,7 @@ namespace NetSim.Lib.Routers
 			}
 		}
 
-		sealed class Graph
+		protected sealed class Graph
 		{
 			private readonly List<EdgeList> adjacency;
 
