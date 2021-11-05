@@ -6,7 +6,6 @@
 # User-specific files
 appsettings.json*
 influxdb2/
-NetSimTests/
 *.rsuser
 *.suo
 *.user
@@ -341,3 +340,4 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+/NetSim/Properties/launchSettings.json

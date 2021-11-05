@@ -187,24 +187,24 @@ namespace NetSim.Lib.Nodes
         public bool IsAvailable()
         {
             // move to settings maybe
-            var threshold = 0.8;
+            var threshold = 0.9;
             var nodeLoad = _load;
 
             // Average load for connections
             // var connectionLoad = _connections.Aggregate(0.0, (current, connection) => current + connection.GetLoad()) / _connections.Count;
-            var connectionLoad = _connections.Max(x => x.GetLoad());
+            //var connectionLoad = _connections.Max(x => x.GetLoad());
 
-            if (nodeLoad > threshold)
-            {
-                return false;
-            }
+			if (nodeLoad > threshold)
+			{
+				return false;
+			}
 
-            //if (connectionLoad > threshold)
-            //{
-            //    return false;
-            //}
+			//if (connectionLoad > threshold)
+			//{
+			//    return false;
+			//}
 
-            return true;
+			return true;
         }
 
         public List<IConnection> GetConnections()

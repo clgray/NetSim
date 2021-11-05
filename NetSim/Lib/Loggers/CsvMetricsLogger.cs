@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -64,7 +65,7 @@ namespace NetSim.Lib.Loggers
                 sw.WriteLine(messagesInQueue);
             }
 
-            var load = string.Join(',', _nodeMetrics.Select(x => x.Load));
+            var load = string.Join(',', _nodeMetrics.Select(x => x.Load.ToString(CultureInfo.InvariantCulture)));
 
             using (var sw = new StreamWriter($"{LogPath}/{FilePrefix}Node-Metrics-load-{Tag}", true))
             {
@@ -84,7 +85,7 @@ namespace NetSim.Lib.Loggers
                 sw.WriteLine(messagesInQueue);
             }
 
-            var load = string.Join(',', _connectionMetrics.Select(x => x.Load));
+            var load = string.Join(',', _connectionMetrics.Select(x => x.Load.ToString(CultureInfo.InvariantCulture)));
 
             using (var sw = new StreamWriter($"{LogPath}/{FilePrefix}Connection-Metrics-load-{Tag}", true))
             {
