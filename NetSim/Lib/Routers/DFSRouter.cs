@@ -42,6 +42,11 @@ namespace NetSim.Lib.Routers
             return path[1];
         }
 
+        public void RebuildRoutes()
+        {
+
+        }
+
         private List<INode> Search(DFSNode node, string targetId)
         {
             if (node.IsVisited)

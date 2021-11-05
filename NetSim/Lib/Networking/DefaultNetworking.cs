@@ -39,11 +39,14 @@ namespace NetSim.Lib.Networking
             for (var i = 0; !stopSignal; i++)
             {
                 currentTime = startTime.AddSeconds(i * _settings.TimeDelta);
-
+                
+                ResourceProvider.RouterProvider.GetRouter(_settings.NodeSettings.First().RoutingAlgorithm).RebuildRoutes();
                 foreach (var node in nodes)
                 {
                     var states = node.Send(currentTime);
+                   
                 }
+                
                 ResourceProvider.MetricsLogger.WriteConnectionMetrics();
                 ResourceProvider.MetricsLogger.WriteNodeMetrics();
 

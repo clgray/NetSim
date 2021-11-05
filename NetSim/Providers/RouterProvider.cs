@@ -10,12 +10,12 @@ namespace NetSim.Providers
     public class RouterProvider
     {
         private readonly NetworkSettings _settings;
-        private readonly DijkstraRouter _dijkstra;
-        private readonly DFSRouter _dfs;
+        private readonly IRouter _dijkstra;
+        private readonly IRouter _dfs;
         public RouterProvider(NetworkSettings settings)
         {
             _settings = settings; // TBD: routing settings
-            _dijkstra = new DijkstraRouter();
+            _dijkstra = new Dijkstra();
             _dfs = new DFSRouter();
         }
 

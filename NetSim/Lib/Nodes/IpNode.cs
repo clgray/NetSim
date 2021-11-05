@@ -192,7 +192,7 @@ namespace NetSim.Lib.Nodes
 
             // Average load for connections
             // var connectionLoad = _connections.Aggregate(0.0, (current, connection) => current + connection.GetLoad()) / _connections.Count;
-            var connectionLoad = _connections.Max(x => x.GetLoad());
+            //var connectionLoad = _connections.Max(x => x.GetLoad());
 
 			if (nodeLoad > threshold)
 			{

@@ -40,6 +40,11 @@ namespace NetSim.Lib.Routers
             return node;
         }
 
+        public void RebuildRoutes()
+        {
+
+        }
+
         // TODO: need refactoring
         private INode GetRouteDefault(INode currentNode, string targetId, Message message)
         {

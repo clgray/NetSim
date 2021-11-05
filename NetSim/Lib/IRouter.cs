@@ -8,5 +8,6 @@ namespace NetSim.Lib
     public interface IRouter
     {
         public INode GetRoute(INode currentNode, string targetId, Message message);
+        void RebuildRoutes();
     }
 }
