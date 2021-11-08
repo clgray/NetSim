@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NetSim.Model;
 using NetSim.Model.Message;
+using NetSim.Model.Node;
 using NetSim.Providers;
 
 namespace NetSim.Lib.Networking
@@ -11,13 +12,15 @@ namespace NetSim.Lib.Networking
     {
         private readonly NetworkSettings _settings;
         private readonly IMessageGenerator _messageGenerator;
-        private List<Message> MessagesTotal;
+        private List<Message> _messagesTotal;
+        private List<NodeMetrics> _nodeMetrics;
 
         public DefaultNetworking(NetworkSettings networkSettings, IMessageGenerator messageGenerator)
         {
             _messageGenerator = messageGenerator;
             _settings = networkSettings;
-            MessagesTotal = new List<Message>();
+            _messagesTotal = new List<Message>();
+            _nodeMetrics = new List<NodeMetrics>();
         }
 
         public void StartSimulation()
@@ -34,14 +37,15 @@ namespace NetSim.Lib.Networking
             var nodesIds = nodes.Select(x => x.GetId()).ToList();
 
             var messages = GenerateMessagesInit(nodesIds, currentTime, nodes);
-            MessagesTotal.AddRange(messages);
+            _messagesTotal.AddRange(messages);
             ResourceProvider.MessagesUnDelivered += messages.Count;
 
             for (var i = 0; !stopSignal; i++)
             {
                 currentTime = startTime.AddSeconds(i * _settings.TimeDelta);
-                
-                ResourceProvider.RouterProvider.GetRouter(_settings.NodeSettings.First().RoutingAlgorithm).RebuildRoutes();
+
+                ResourceProvider.RouterProvider.GetRouter(_settings.NodeSettings.First().RoutingAlgorithm)
+                    .RebuildRoutes();
                 foreach (var node in nodes)
                 {
                     var states = node.Send(currentTime);
@@ -49,7 +53,7 @@ namespace NetSim.Lib.Networking
 
                 var messagesFailedCurrentIteration = ResourceProvider.MessagesDeliverFailed - currentFailedMessages;
                 currentFailedMessages = ResourceProvider.MessagesDeliverFailed;
-                
+
                 ResourceProvider.MetricsLogger.WriteFailedMessagesCount(messagesFailedCurrentIteration);
                 ResourceProvider.MetricsLogger.WriteConnectionMetrics();
                 ResourceProvider.MetricsLogger.WriteNodeMetrics();
@@ -63,14 +67,14 @@ namespace NetSim.Lib.Networking
 
             }
 
-            ResourceProvider.MetricsLogger.WriteMessageMetrics(MessagesTotal);
+            ResourceProvider.MetricsLogger.WriteMessageMetrics(_messagesTotal);
 
             Console.WriteLine(tag);
-            var count = MessagesTotal.Count;
-            var averageTime = MessagesTotal.Select(x => x.TimeSpent).Aggregate((x, y) => x + y) / count;
-            var averageSize = MessagesTotal.Select(x => x.Size).Aggregate((x, y) => x + y) / count;
+            var count = _messagesTotal.Count;
+            var averageTime = _messagesTotal.Select(x => x.TimeSpent).Aggregate((x, y) => x + y) / count;
+            var averageSize = _messagesTotal.Select(x => x.Size).Aggregate((x, y) => x + y) / count;
             Console.WriteLine($"Среднее время для доставки сообщения: {averageTime}");
-            Console.WriteLine($"Сообщений всего: {MessagesTotal.Count}");
+            Console.WriteLine($"Сообщений всего: {_messagesTotal.Count}");
             Console.WriteLine($"Сообщений не доставлено: {ResourceProvider.MessagesDeliverFailed}");
             Console.WriteLine($"Средний размер сообщения: {averageSize}");
 
@@ -113,14 +117,21 @@ namespace NetSim.Lib.Networking
             if (_messageGenerator.GenerateInProgress())
             {
                 var messages = GenerateMessages(time, nodes);
-                MessagesTotal.AddRange(messages);
+                _messagesTotal.AddRange(messages);
                 ResourceProvider.MessagesUnDelivered += messages.Count;
             }
+
+            // TODO: Get nodes state and rebuild routes here
         }
 
         private void InitNetwork(string tag)
         {
             ResourceProvider.InitProviders(_settings, tag);
         }
-    }
+
+        private void UpdateNodeStates()
+        {
+            _nodeMetrics = ResourceProvider.NodeProvider.GetNodes().Select(x => x.GetNodeState()).ToList();
+        }
+}
 }

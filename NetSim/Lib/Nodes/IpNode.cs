@@ -24,7 +24,8 @@ namespace NetSim.Lib.Nodes
         private readonly float _timeDelta;
         private float _waitTimer;
         private float _load;
-        private int _messageInQueueCount;
+        private float _messagesInQueueSize;
+        private int _messagesInQueueCount;
         private NodeMetrics _nodeMetrics;
 
         public IpNode(NodeSettings settings, float timeDelta)
@@ -35,7 +36,8 @@ namespace NetSim.Lib.Nodes
             _messageQueue = new Queue<Message>();
             _timeDelta = timeDelta;
             _waitTimer = 0;
-            _messageInQueueCount = 0;
+            _messagesInQueueCount = 0;
+            _messagesInQueueSize = 0;
             _nodeMetrics = new NodeMetrics();
         }
 
@@ -63,7 +65,7 @@ namespace NetSim.Lib.Nodes
                 Time = currentTime,
                 Id = GetId(),
                 Tag = ResourceProvider.Tag,
-                MessagesReceived = _messageQueue.Count - _messageInQueueCount
+                MessagesReceived = _messageQueue.Count - _messagesInQueueCount
             };
 
 
@@ -93,6 +95,9 @@ namespace NetSim.Lib.Nodes
 
                     var state = connection.Send(message, nextNode);
                     message.State = MessageState.Sent; // Enqueue after fail?
+
+                    _messagesInQueueSize -= message.Size;
+
                     if (!state)
                     {
                         message.State = MessageState.Failed; // TODO: resent message in case of dead Connection
@@ -129,10 +134,11 @@ namespace NetSim.Lib.Nodes
             }
 
             _load = _waitTimer / _timeDelta;
-            _messageInQueueCount = _messageQueue.Count;
+            _messagesInQueueCount = _messageQueue.Count;
 
-            nodeMetrics.MessagesSent = nodeMetrics.MessagesInQueue - _messageInQueueCount;
-            nodeMetrics.MessagesInQueue = _messageInQueueCount;
+            nodeMetrics.MessagesSent = nodeMetrics.MessagesInQueue - _messagesInQueueCount;
+            nodeMetrics.MessagesInQueue = _messagesInQueueCount;
+            nodeMetrics.MessagesTotalSize = _messagesInQueueSize;
             nodeMetrics.Load = _load;
             if (nodeMetrics.Load > 1)
             {
@@ -170,6 +176,7 @@ namespace NetSim.Lib.Nodes
             }
 
             _messageQueue.Enqueue(data);
+            _messagesInQueueSize += data.Size;
             return new State()
             {
                 Message = $"Message received on node {_settings.Id}",

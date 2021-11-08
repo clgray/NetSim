@@ -15,6 +15,7 @@ namespace NetSim.Lib.Connections
         private readonly float _timeDelta;
         private float _waitTimer;
         private float _load;
+        private float _messageInQueueSize;
         private int _messageInQueueCount;
         private bool IsActive { get; set; }
 
@@ -34,6 +35,7 @@ namespace NetSim.Lib.Connections
             _timeDelta = timeDelta;
             IsActive = true;
             _messageInQueueCount = 0;
+            _messageInQueueSize = 0;
         }
 
         public bool Send(Message data, INode receiver)
@@ -52,6 +54,7 @@ namespace NetSim.Lib.Connections
                 Message = data,
                 Receiver = receiver
             });
+            _messageInQueueSize += data.Size;
 
             // receiver.Receive(data);
             return true;
@@ -109,9 +112,12 @@ namespace NetSim.Lib.Connections
 
             _load = _waitTimer / _timeDelta;
             _messageInQueueCount = _queue.Count;
+            // Possible error accumulation here
+            _messageInQueueSize -= _waitTimer * _settings.Bandwidth;
 
             connectionMetrics.MessagesSent = connectionMetrics.MessagesInQueue - _messageInQueueCount;
             connectionMetrics.MessagesInQueue = _messageInQueueCount;
+            connectionMetrics.MessagesTotalSize = _messageInQueueSize;
             connectionMetrics.Load = _load;
             if (connectionMetrics.Load > 1)
             {

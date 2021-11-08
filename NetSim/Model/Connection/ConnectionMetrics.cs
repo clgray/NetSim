@@ -14,6 +14,8 @@ namespace NetSim.Model.Connection
         public int MessagesSent { get; set; }        
         [Column("received")]
         public int MessagesReceived { get; set; }
+        [Column("totalsize")]
+        public float MessagesTotalSize { get; set; }
         [Column("load")]
         public float Load { get; set; }
         [Column("throughput")]
