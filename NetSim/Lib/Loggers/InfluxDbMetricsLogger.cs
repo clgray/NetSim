@@ -56,6 +56,11 @@ namespace NetSim.Lib
             return;
         }
 
+        public void WriteFailedMessagesCount(int count)
+        {
+            return;
+        }
+
         public void CollectNodeMetrics(NodeMetrics nodeMetrics)
         {
             _writeApi.WriteMeasurement(WritePrecision.S, nodeMetrics);

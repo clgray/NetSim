@@ -94,6 +94,12 @@ namespace NetSim.Lib.Loggers
             _connectionMetrics.Clear();
         }
 
+        public void WriteFailedMessagesCount(int count)
+        {
+            using var sw = new StreamWriter($"{LogPath}/{FilePrefix}Message-Metrics-failed-{Tag}", true);
+            sw.WriteLine(count.ToString());
+        }
+
         public void CollectNodeMetrics(NodeMetrics nodeMetrics)
         {
             _nodeMetrics.Add(nodeMetrics);

@@ -11,7 +11,11 @@ namespace NetSim.Model.Node
         [Column("inqueue")]
         public int MessagesInQueue { get; set; }
         [Column("sent")]
-        public int MessagesSent { get; set; }
+        public int MessagesSent { get; set; }        
+        [Column("received")]
+        public int MessagesReceived { get; set; }
+        [Column("totalsize")]
+        public float MessagesTotalSize { get; set; }
         [Column("load")]
         public float Load { get; set; }
         [Column("throughput")]

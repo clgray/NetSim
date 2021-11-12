@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using NetSim.Model;
+using NetSim.Model.Node;
 
 namespace NetSim.Lib
 {
@@ -15,5 +16,6 @@ namespace NetSim.Lib
         public List<IConnection> GetConnections();
         public void AddConnection(IConnection connection);
         public bool IsAvailable();
+        public NodeMetrics GetNodeState();
     }
 }

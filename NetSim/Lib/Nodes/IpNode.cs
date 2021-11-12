@@ -7,6 +7,7 @@ using System.Reflection.Metadata;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using InfluxDB.Client.Api.Domain;
 using NetSim.Model;
 using NetSim.Model.Message;
 using NetSim.Model.Node;
@@ -23,6 +24,9 @@ namespace NetSim.Lib.Nodes
         private readonly float _timeDelta;
         private float _waitTimer;
         private float _load;
+        private float _messagesInQueueSize;
+        private int _messagesInQueueCount;
+        private NodeMetrics _nodeMetrics;
 
         public IpNode(NodeSettings settings, float timeDelta)
         {
@@ -32,6 +36,9 @@ namespace NetSim.Lib.Nodes
             _messageQueue = new Queue<Message>();
             _timeDelta = timeDelta;
             _waitTimer = 0;
+            _messagesInQueueCount = 0;
+            _messagesInQueueSize = 0;
+            _nodeMetrics = new NodeMetrics();
         }
 
         public IpNode(NodeSettings settings, IEnumerable<Message> messages)
@@ -53,17 +60,13 @@ namespace NetSim.Lib.Nodes
 
             var nodeMetrics = new NodeMetrics()
             {
-                //MessagesInQueue = _messageQueue.Count(x => x.State != MessageState.Received),
                 MessagesInQueue = _messageQueue.Count,
                 Throughput = _settings.Throughput,
                 Time = currentTime,
                 Id = GetId(),
-                Tag = ResourceProvider.Tag
+                Tag = ResourceProvider.Tag,
+                MessagesReceived = _messageQueue.Count - _messagesInQueueCount
             };
-            //foreach (var message in _messageQueue.ToList())
-            //{
-            //    message.State = MessageState.New;
-            //}
 
 
             while (_waitTimer < _timeDelta)
@@ -92,6 +95,9 @@ namespace NetSim.Lib.Nodes
 
                     var state = connection.Send(message, nextNode);
                     message.State = MessageState.Sent; // Enqueue after fail?
+
+                    _messagesInQueueSize -= message.Size;
+
                     if (!state)
                     {
                         message.State = MessageState.Failed; // TODO: resent message in case of dead Connection
@@ -128,14 +134,18 @@ namespace NetSim.Lib.Nodes
             }
 
             _load = _waitTimer / _timeDelta;
+            _messagesInQueueCount = _messageQueue.Count;
 
-            nodeMetrics.MessagesSent = nodeMetrics.MessagesInQueue - _messageQueue.Count;
-            nodeMetrics.MessagesInQueue = _messageQueue.Count;
+            nodeMetrics.MessagesSent = nodeMetrics.MessagesInQueue - _messagesInQueueCount;
+            nodeMetrics.MessagesInQueue = _messagesInQueueCount;
+            nodeMetrics.MessagesTotalSize = _messagesInQueueSize;
             nodeMetrics.Load = _load;
             if (nodeMetrics.Load > 1)
             {
                 nodeMetrics.Load = 1;
             }
+
+            _nodeMetrics = nodeMetrics;
 
             ResourceProvider.MetricsLogger.CollectNodeMetrics(nodeMetrics);
 
@@ -166,6 +176,7 @@ namespace NetSim.Lib.Nodes
             }
 
             _messageQueue.Enqueue(data);
+            _messagesInQueueSize += data.Size;
             return new State()
             {
                 Message = $"Message received on node {_settings.Id}",
@@ -190,21 +201,12 @@ namespace NetSim.Lib.Nodes
             var threshold = 0.9;
             var nodeLoad = _load;
 
-            // Average load for connections
-            // var connectionLoad = _connections.Aggregate(0.0, (current, connection) => current + connection.GetLoad()) / _connections.Count;
-            //var connectionLoad = _connections.Max(x => x.GetLoad());
+            return (nodeLoad <= threshold);
+        }
 
-			if (nodeLoad > threshold)
-			{
-				return false;
-			}
-
-			//if (connectionLoad > threshold)
-			//{
-			//    return false;
-			//}
-
-			return true;
+        public NodeMetrics GetNodeState()
+        {
+            return _nodeMetrics;
         }
 
         public List<IConnection> GetConnections()
