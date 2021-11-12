@@ -19,23 +19,42 @@ namespace NetworkSettingsCreator.Model
 			var connectionsCount = GetConnectionsCount(configuration);
 
 			var nodes = Enumerable.Range(0, (int) configuration.NodesCount).Select(x => new Node(x)).ToArray();
-			var connections = Enumerable.Range(0, (int) connectionsCount).Select(x => new Connection());
+			var connections = Enumerable.Range(0, (int) connectionsCount).Select(x => new Connection()).ToList();
 
 			foreach (var connection in connections)
 			{
-				var nodeA = GetRandomNode(nodes, configuration.NodeConfiguration.ConnectionsRange.Max);
-				Node nodeB;
-				do
-				{
-					nodeB = GetRandomNode(nodes, configuration.NodeConfiguration.ConnectionsRange.Max);
-				} while (nodeA.Connections.Any(c => c.Nodes.Contains(nodeB)) || nodeA == nodeB);
+				var node = GetRandomNode(nodes, configuration.NodeConfiguration.ConnectionsRange.Max);
+				ConnectWithRandomNode(nodes, configuration.NodeConfiguration.ConnectionsRange.Max, node, connection);
+			}
 
-				connection.Nodes = new List<Node> {nodeA, nodeB};
-				nodeA.Connections.Add(connection);
-				nodeB.Connections.Add(connection);
+
+			var notConnectedNodes = nodes.Where(x => x.Connections.Count == 0).ToArray();
+			while (notConnectedNodes.Any())
+			{
+				foreach (var node in notConnectedNodes)
+				{
+					var connection = new Connection();
+					connections.Add(connection);
+					ConnectWithRandomNode(nodes, configuration.NodeConfiguration.ConnectionsRange.Max, node,
+						connection);
+				}
+				notConnectedNodes = nodes.Where(x => x.Connections.Count == 0).Select(x => x).ToArray();
 			}
 
 			return nodes;
+		}
+
+		private void ConnectWithRandomNode(Node[] nodes, long connectionsRangeMax, Node nodeA, Connection connection)
+		{
+			Node nodeB;
+			do
+			{
+				nodeB = GetRandomNode(nodes, connectionsRangeMax);
+			} while (nodeA.Connections.Any(c => c.Nodes.Contains(nodeB)) || nodeA == nodeB);
+
+			connection.Nodes = new List<Node> {nodeA, nodeB};
+			nodeA.Connections.Add(connection);
+			nodeB.Connections.Add(connection);
 		}
 
 		private Node GetRandomNode(IReadOnlyList<Node> nodes, in long connectionsRangeMax)
