@@ -25,6 +25,7 @@ namespace NetSim.Lib.Nodes
         private float _waitTimer;
         private float _load;
         private float _messagesInQueueSize;
+        private float _messagesInQueueSizePerStep;
         private int _messagesInQueueCount;
         private NodeMetrics _nodeMetrics;
 
@@ -38,6 +39,7 @@ namespace NetSim.Lib.Nodes
             _waitTimer = 0;
             _messagesInQueueCount = 0;
             _messagesInQueueSize = 0;
+            _messagesInQueueSizePerStep = 0;
             _nodeMetrics = new NodeMetrics();
         }
 
@@ -65,8 +67,12 @@ namespace NetSim.Lib.Nodes
                 Time = currentTime,
                 Id = GetId(),
                 Tag = ResourceProvider.Tag,
-                MessagesReceived = _messageQueue.Count - _messagesInQueueCount
+                MessagesReceived = _messageQueue.Count - _messagesInQueueCount,
+                MessagesReceivedSize = _messagesInQueueSizePerStep
             };
+
+            _messagesInQueueSizePerStep = 0;
+            var messagesSizeBeforeSend = _messagesInQueueSize;
 
 
             while (_waitTimer < _timeDelta)
@@ -139,6 +145,7 @@ namespace NetSim.Lib.Nodes
             nodeMetrics.MessagesSent = nodeMetrics.MessagesInQueue - _messagesInQueueCount;
             nodeMetrics.MessagesInQueue = _messagesInQueueCount;
             nodeMetrics.MessagesTotalSize = _messagesInQueueSize;
+            nodeMetrics.MessagesSentSize = messagesSizeBeforeSend - _messagesInQueueSize;
             nodeMetrics.Load = _load;
             if (nodeMetrics.Load > 1)
             {
@@ -177,6 +184,7 @@ namespace NetSim.Lib.Nodes
 
             _messageQueue.Enqueue(data);
             _messagesInQueueSize += data.Size;
+            _messagesInQueueSizePerStep += data.Size;
             return new State()
             {
                 Message = $"Message received on node {_settings.Id}",
