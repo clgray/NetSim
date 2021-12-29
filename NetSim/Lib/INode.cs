@@ -16,6 +16,7 @@ namespace NetSim.Lib
         public List<IConnection> GetConnections();
         public void AddConnection(IConnection connection);
         public bool IsAvailable();
+        public float Load();
         public NodeMetrics GetNodeState();
     }
 }

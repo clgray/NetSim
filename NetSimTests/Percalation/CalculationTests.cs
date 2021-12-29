@@ -11,9 +11,9 @@ namespace NetSimTests.Percalation
 		public void Intergal6Test()
 		{
 			var p = Calculation.Intergal6(4, 50, 15, 7, 1, 90, 50);
-			for (int i = 0; i < 100; i++)
+			for (int i = 1; i < 100; i++)
 			{
-				Console.WriteLine(Calculation.Intergal6(i/10.0, 50, 15, 7, 1, 100, 100));
+				Console.WriteLine(Calculation.Intergal6(i, 5, 8, 8, 1, 100, 50));
 			}
 
 			Assert.AreEqual(42, p);

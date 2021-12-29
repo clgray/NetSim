@@ -89,25 +89,27 @@ namespace NetSim.Lib.Connections
 
             while (_waitTimer < _timeDelta)
             {
-                var dataToTransmit = _queue.TryDequeue(out var data);
+                var dataToTransmit = _queue.TryPeek(out var data);
 
                 if (!dataToTransmit)
                 {
                     break;
                 }
 
-                _waitTimer += data.Delay;
                 var capacity = _timeDelta - _waitTimer < 0 ? 0 : _timeDelta - _waitTimer;
-                
-                data.Delay -= capacity;
+                var workTime = Math.Min(data.Delay, capacity);
+                _waitTimer += workTime;
+
+                data.Delay -= workTime;
                 if (data.Delay <= 0)
                 {
-                    data.Receiver.Receive(data.Message);
-                    continue;
+	                if (!data.Receiver.IsAvailable())
+	                {
+                        break;
+	                }
+                    _queue.Dequeue();
+	                data.Receiver.Receive(data.Message);
                 }
-
-                // Should split available bandwidth equally between all messages
-                _queue.Enqueue(data);
             }
 
             _load = _waitTimer / _timeDelta;

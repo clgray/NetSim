@@ -20,8 +20,9 @@ namespace NetSim.Lib.Routers
 
                     var nodeMetrics = neighbour.GetNodeState();
 
-					if (!neighbour.IsAvailable())
-						weight = 10000;
+					if (neighbour.Load() > 0.9)
+					//if (!neighbour.IsAvailable())
+					weight = 10000;
 
 					var connection = node.GetConnections().First(x => x.GetConnectedNodes().Any(x => x == neighbour));
 

@@ -15,7 +15,7 @@ namespace NetSim.Providers
         public RouterProvider(NetworkSettings settings)
         {
             _settings = settings; // TBD: routing settings
-            _dijkstra = new DijkstraRouterByShortestPath();
+            _dijkstra = new DijkstraRouterF6();
             _dfs = new DFSRouter();
         }
 

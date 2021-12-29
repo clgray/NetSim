@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using static System.Math;
 
 namespace NetSim.Lib.Routers.Percalation
@@ -55,8 +56,16 @@ namespace NetSim.Lib.Routers.Percalation
 
 		public static double SolveEquation6(double x0, double ε, double ξ, double τ, double L, int M)
 		{
-			return Secant(1, 1000, 0.05, t => Intergal6(t, x0, ε, ξ, τ, L, M) - 0.1);
+			var key = $"{x0}, {ε}, {ξ}, {τ}, {L}, {M}";
+			if (SolveEquation6Cache.ContainsKey(key))
+				return SolveEquation6Cache[key];
+
+			var value = Secant(1, 1000, 0.01, t => Intergal6(t, x0, ε, ξ, τ, L, M) - 0.1);
+			SolveEquation6Cache[key] = value;
+			return value;
 		}
+
+		private static readonly Dictionary<string, double> SolveEquation6Cache = new Dictionary<string, double>();
 
 		static double Secant(double x1, double x2, double precision, Func<double, double> f)
 
@@ -85,8 +94,7 @@ namespace NetSim.Lib.Routers.Percalation
 				{
 					x1 = x;
 				}
-
-			} while (Abs(fx) > precision);
+			} while (Abs(fx) > precision && Abs(x1 -x2) > precision);
 
 			return x;
 		}

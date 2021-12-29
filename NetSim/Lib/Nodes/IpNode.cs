@@ -206,10 +206,15 @@ namespace NetSim.Lib.Nodes
         public bool IsAvailable()
         {
             // move to settings maybe
-            var threshold = 0.9;
+            var threshold = 0.95;
             var nodeLoad = _load;
 
-            return (nodeLoad <= threshold);
+            // return (nodeLoad <= threshold) || _messagesInQueueSize <= _settings.Throughput * 10;
+            return _messagesInQueueSize <= _settings.Throughput * 5;
+        }
+        public float Load()
+        {
+	        return _load;
         }
 
         public NodeMetrics GetNodeState()
