@@ -60,7 +60,17 @@ namespace NetSim.Lib.Routers.Percalation
 			if (SolveEquation6Cache.ContainsKey(key))
 				return SolveEquation6Cache[key];
 
-			var value = Secant(1, 1000, 0.01, t => Intergal6(t, x0, ε, ξ, τ, L, M) - 0.1);
+			var value = Secant(0.1, 1000, 0.01, t => 0.1 - Intergal6(t, x0, ε, ξ, τ, L, M));
+			SolveEquation6Cache[key] = value;
+			return value;
+		}
+		public static double SolveEquation6_q(double x0, double ε, double ξ, double τ, double L, int M)
+		{
+			var key = $"{x0}, {ε}, {ξ}, {τ}, {L}, {M}";
+			if (SolveEquation6Cache.ContainsKey(key))
+				return SolveEquation6Cache[key];
+
+			var value = Secant(0.1, 1000, 0.01, t => Intergal6(t, x0, ε, ξ, τ, L, M)-0.95);
 			SolveEquation6Cache[key] = value;
 			return value;
 		}

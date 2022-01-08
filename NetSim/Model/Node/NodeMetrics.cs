@@ -26,7 +26,7 @@ namespace NetSim.Model.Node
         public float MessagesReceivedSize { get; set; }
 
         [Column("totalsize")]
-        public float MessagesTotalSize { get; set; }
+        public float MessagesInQueueSize { get; set; }
 
         [Column("load")]
         public float Load { get; set; }
@@ -39,5 +39,7 @@ namespace NetSim.Model.Node
 
         [Column("tag", IsTag = true)]
         public string Tag { get; set; }
+
+        public bool IsActive { get; set; }
     }
 }

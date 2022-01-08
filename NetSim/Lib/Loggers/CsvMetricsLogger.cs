@@ -71,6 +71,13 @@ namespace NetSim.Lib.Loggers
             {
                 sw.WriteLine(load);
             }
+
+            var blocked = string.Join(',', _nodeMetrics.Select(x => x.IsActive?0:1));
+
+            using (var sw = new StreamWriter($"{LogPath}/{FilePrefix}Node-Metrics-blocked-{Tag}", true))
+            {
+	            sw.WriteLine(blocked);
+            }
             _nodeMetrics.Clear();
         }
 
@@ -91,6 +98,8 @@ namespace NetSim.Lib.Loggers
             {
                 sw.WriteLine(load);
             }
+
+           
             _connectionMetrics.Clear();
         }
 

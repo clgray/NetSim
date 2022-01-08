@@ -341,3 +341,7 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 /NetSim/Properties/launchSettings.json
+/NetSimVisualizer/.ipynb_checkpoints
+/Result/Netsim-*
+/Result/log*.txt
+*.rar

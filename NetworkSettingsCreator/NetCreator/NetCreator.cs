@@ -28,7 +28,7 @@ namespace NetworkSettingsCreator.NetCreator
 				{
 					Id = n.Id.ToString(),
 					Throughput = GetRandomFromRange(configuration.NodeConfiguration.Throughput),
-					RoutingAlgorithm = configuration.NodeConfiguration.RoutingAlgorithm
+					//RoutingAlgorithm = configuration.NodeConfiguration.RoutingAlgorithm
 				}).ToList(),
 				ConnectionSettings = nodes.SelectMany(node => node.Connections
 						.Where(n => n.Nodes[0].Id == node.Id)
@@ -46,7 +46,9 @@ namespace NetworkSettingsCreator.NetCreator
 					Quantity = configuration.MessagesConfiguration.Quantity,
 					Seed = configuration.MessagesConfiguration.Seed
 				},
-				TimeDelta = configuration.TimeDelta
+				TimeDelta = configuration.TimeDelta,
+				SimulationSettings = new SimulationSettings()
+				{ RoutingAlgorithm = configuration.NodeConfiguration.RoutingAlgorithm }
 			};
 			return networkSettings;
 		}

@@ -8,15 +8,17 @@ using NetSim.Model.Node;
 
 namespace NetSim.Lib
 {
-    public interface INode
-    {
-        public IEnumerable<State> Send(DateTime currentTime);
-        public State Receive(Message data);
-        public string GetId();
-        public List<IConnection> GetConnections();
-        public void AddConnection(IConnection connection);
-        public bool IsAvailable();
-        public float Load();
-        public NodeMetrics GetNodeState();
-    }
+	public interface INode
+	{
+		public IEnumerable<State> ProgressQueue(DateTime currentTime);
+		public State Receive(Message data);
+		public string GetId();
+		public List<IConnection> GetConnections();
+		public void AddConnection(IConnection connection);
+		public bool IsAvailable();
+		public float Load();
+		public NodeMetrics GetNodeState();
+		public bool IsActive();
+		void Disable();
+	}
 }

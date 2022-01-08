@@ -7,158 +7,162 @@ using NetSim.Providers;
 
 namespace NetSim.Lib.Connections
 {
-    class WiredConnection : IConnection
-    {
-        private readonly ConnectionSettings _settings;
-        private readonly List<INode> _connectedNodes;
-        private readonly Queue<MessageData> _queue;
-        private readonly float _timeDelta;
-        private float _waitTimer;
-        private float _load;
-        private float _messageInQueueSize;
-        private int _messageInQueueCount;
-        private bool IsActive { get; set; }
+	class WiredConnection : IConnection
+	{
+		private readonly ConnectionSettings _settings;
+		private readonly List<INode> _connectedNodes;
+		private readonly Queue<MessageData> _queue;
+		private readonly float _timeDelta;
+		private float _load;
+		private float _messageInQueueSize;
+		private int _messageInQueueCount;
+		private bool IsActive { get; set; }
 
-        private class MessageData
-        {
-            public INode Receiver { get; set; }
-            public float Delay { get; set; }
-            public Message Message { get; set; }
-        }
-        
+		private class MessageData
+		{
+			public INode Receiver { get; set; }
+			public float Delay { get; set; }
+			public Message Message { get; set; }
+		}
 
-        public WiredConnection(ConnectionSettings settings, List<INode> connectedNodes, float timeDelta)
-        {
-            _settings = settings;
-            _connectedNodes = connectedNodes;
-            _queue = new Queue<MessageData>();
-            _timeDelta = timeDelta;
-            IsActive = true;
-            _messageInQueueCount = 0;
-            _messageInQueueSize = 0;
-        }
+		public double TimeWaiting => _messageInQueueSize / _settings.Bandwidth;
 
-        public bool Send(Message data, INode receiver)
-        {
-            if (!IsActive)
-            {
-                ResourceProvider.MessagesUnDelivered -= 1;
-                return false;
-            }
+		public WiredConnection(ConnectionSettings settings, List<INode> connectedNodes, float timeDelta)
+		{
+			_settings = settings;
+			_connectedNodes = connectedNodes;
+			_queue = new Queue<MessageData>();
+			_timeDelta = timeDelta;
+			IsActive = true;
+			_messageInQueueCount = 0;
+			_messageInQueueSize = 0;
+		}
 
-            var timeSpent = CalculateTimeSpent(data);
+		public bool Send(Message data, INode receiver)
+		{
+			if (!IsActive)
+			{
+				ResourceProvider.MessagesUnDelivered -= 1;
+				return false;
+			}
 
-            _queue.Enqueue(new MessageData()
-            {
-                Delay = timeSpent,
-                Message = data,
-                Receiver = receiver
-            });
-            _messageInQueueSize += data.Size;
+			var timeSpent = CalculateTimeSpent(data);
 
-            // receiver.Receive(data);
-            return true;
-        }
+			_queue.Enqueue(new MessageData()
+			{
+				Delay = timeSpent,
+				Message = data,
+				Receiver = receiver
+			});
+			_messageInQueueSize += data.Size;
 
-        public float GetLoad()
-        {
-            return _load;
-        }
+			return true;
+		}
 
-        public void ProgressQueue(DateTime currentTime)
-        {
-            if (!IsActive)
-            {
-                return;
-            }
+		public float GetLoad()
+		{
+			return _load;
+		}
 
-            if (_waitTimer < 0)
-            {
-                _waitTimer = 0;
-            }
+		public void ProgressQueue(DateTime currentTime)
+		{
+			if (!IsActive)
+			{
+				return;
+			}
 
-            var connectionMetrics = new ConnectionMetrics()
-            {
-                MessagesInQueue = _queue.Count,
-                Throughput = _settings.Bandwidth,
-                Time = currentTime,
-                Connection = string.Join( '-', _settings.NodeIds),
-                Tag = ResourceProvider.Tag,
-                MessagesReceived = _queue.Count - _messageInQueueCount
-            };
+			float waitTimer = 0;
 
-            while (_waitTimer < _timeDelta)
-            {
-                var dataToTransmit = _queue.TryPeek(out var data);
 
-                if (!dataToTransmit)
-                {
-                    break;
-                }
+			var connectionMetrics = new ConnectionMetrics()
+			{
+				MessagesInQueue = _queue.Count,
+				Throughput = _settings.Bandwidth,
+				Time = currentTime,
+				Connection = string.Join('-', _settings.NodeIds),
+				Tag = ResourceProvider.Tag,
+				MessagesReceived = _queue.Count - _messageInQueueCount
+			};
+			var maxDequeueCount = _queue.Count * 2;
 
-                var capacity = _timeDelta - _waitTimer < 0 ? 0 : _timeDelta - _waitTimer;
-                var workTime = Math.Min(data.Delay, capacity);
-                _waitTimer += workTime;
+			while (waitTimer < _timeDelta && maxDequeueCount > 0)
+			{
+				var dataToTransmit = _queue.TryDequeue(out var data);
 
-                data.Delay -= workTime;
-                if (data.Delay <= 0)
-                {
-	                if (!data.Receiver.IsAvailable())
-	                {
-                        break;
-	                }
-                    _queue.Dequeue();
-	                data.Receiver.Receive(data.Message);
-                }
-            }
+				if (!dataToTransmit)
+				{
+					break;
+				}
 
-            _load = _waitTimer / _timeDelta;
-            _messageInQueueCount = _queue.Count;
-            // Possible error accumulation here
-            _messageInQueueSize -= _waitTimer * _settings.Bandwidth;
+				maxDequeueCount--;
 
-            connectionMetrics.MessagesSent = connectionMetrics.MessagesInQueue - _messageInQueueCount;
-            connectionMetrics.MessagesInQueue = _messageInQueueCount;
-            connectionMetrics.MessagesTotalSize = _messageInQueueSize;
-            connectionMetrics.Load = _load;
-            if (connectionMetrics.Load > 1)
-            {
-                connectionMetrics.Load = 1;
-            }
+				if (!data.Receiver.IsActive())
+				{
+					_queue.Enqueue(data);
+					continue;
+				}
 
-            ResourceProvider.MetricsLogger.CollectConnectionMetrics(connectionMetrics);
+				var capacity = _timeDelta - waitTimer < 0 ? 0 : _timeDelta - waitTimer;
+				var workTime = Math.Min(data.Delay, capacity);
+				waitTimer += workTime;
 
-            _waitTimer -= _timeDelta;
-        }
+				data.Delay -= workTime;
+				if (data.Delay <= 0)
+				{
+					data.Message.TimeSpent = (currentTime - data.Message.Time).TotalSeconds;
+					data.Receiver.Receive(data.Message);
+				}
+				else
+				{
+					_queue.Enqueue(data);
+				}
+			}
 
-        public IEnumerable<INode> GetConnectedNodes()
-        {
-            return _connectedNodes;
-        }
+			_load = waitTimer / _timeDelta;
+			_messageInQueueCount = _queue.Count;
+			// Possible error accumulation here
+			_messageInQueueSize -= waitTimer * _settings.Bandwidth;
 
-        public bool IsConnected(INode node)
-        {
-            return _connectedNodes.Contains(node);
-        }
+			connectionMetrics.MessagesSent = connectionMetrics.MessagesInQueue - _messageInQueueCount;
+			connectionMetrics.MessagesInQueue = _messageInQueueCount;
+			connectionMetrics.MessagesTotalSize = _messageInQueueSize;
+			connectionMetrics.Load = _load;
+			if (connectionMetrics.Load > 1)
+			{
+				connectionMetrics.Load = 1;
+			}
 
-        public void Enable()
-        {
-            IsActive = true;
-        }
+			ResourceProvider.MetricsLogger.CollectConnectionMetrics(connectionMetrics);
+		}
 
-        public void Disable()
-        {
-            IsActive = false;
-        }
+		public IEnumerable<INode> GetConnectedNodes()
+		{
+			return _connectedNodes;
+		}
 
-        public float GetBandwidth()
-        {
-            return _settings.Bandwidth;
-        }
+		public bool IsConnected(INode node)
+		{
+			return _connectedNodes.Contains(node);
+		}
 
-        private float CalculateTimeSpent(Message message)
-        {
-            return message.Size / _settings.Bandwidth;
-        }
-    }
+		public void Enable()
+		{
+			IsActive = true;
+		}
+
+		public void Disable()
+		{
+			IsActive = false;
+		}
+
+		public float GetBandwidth()
+		{
+			return _settings.Bandwidth;
+		}
+
+		private float CalculateTimeSpent(Message message)
+		{
+			return message.Size / _settings.Bandwidth;
+		}
+	}
 }

@@ -5,8 +5,8 @@
 	"NodeConfiguration": {
 		"RoutingAlgorithm": "dijkstra",
 		"Throughput": {
-			"Min": 2000,
-			"Max": 2000
+			"Min": 10,
+			"Max": 25
 		},
 		"ConnectionsRange": {
 			"Min": 2,
@@ -15,8 +15,8 @@
 	},
 	"ConnectionConfiguration": {
 		"Bandwidth": {
-			"Min": 1000,
-			"Max": 2000
+			"Min": 200,
+			"Max": 300
 		},
 		"TimeUntilShutdown": 0
 	},
@@ -24,7 +24,7 @@
 		"Quantity": 300,
 		"Size": {
 			"Min": 1,
-			"Max": 500
+			"Max": 5
 		},
 		"Seed": 1000
 	}

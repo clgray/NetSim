@@ -8,7 +8,7 @@ namespace NetSim.Model.Message
     {
         public string Data { get; set; }
         public float Size { get; set; }
-        public float TimeSpent { get; set; } = 0;
+        public double TimeSpent { get; set; } = 0;
         public DateTime Time { get; set; }
         public string StartId { get; set; }
         public string TargetId { get; set; }

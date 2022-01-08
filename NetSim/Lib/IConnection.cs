@@ -16,5 +16,6 @@ namespace NetSim.Lib
         public void ProgressQueue(DateTime currentTime);
         public void Enable();
         public void Disable();
+        public double TimeWaiting { get; }
     }
 }

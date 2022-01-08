@@ -9,6 +9,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using NetSim.Model;
 using NetSim.Model.Message;
+using NetSim.Providers;
 
 namespace NetSim.Lib.MessageGenerators
 {
@@ -84,9 +85,11 @@ namespace NetSim.Lib.MessageGenerators
 
         private void ReadGeneratorSettings()
         {
-            var path = Path.Combine(Environment.CurrentDirectory, "ConstantGeneratorSettings.json");
-            var json = File.ReadAllText(path);
-            _generatorSettings = JsonSerializer.Deserialize<ConstantMessageGeneratorSettings>(json);
+           _generatorSettings = new ConstantMessageGeneratorSettings()
+           {
+               MessagesToGenerateOnInit = ResourceProvider.SimulationSettings.MessagesToGenerateOnInit,
+               NumberOfGenerations = ResourceProvider.SimulationSettings.NumberOfGenerations
+           };
         }
     }
 }

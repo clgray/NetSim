@@ -11,7 +11,7 @@ namespace NetSim.Model.Message
         [Column("size")]
         public float Size { get; set; }
         [Column("timespent")]
-        public float TimeSpent { get; set; }
+        public double TimeSpent { get; set; }
         [Column("path")]
         public string Path { get; set; }
         [Column("received")]

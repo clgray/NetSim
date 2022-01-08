@@ -29,13 +29,13 @@ namespace NetSim.Providers
 
         private List<INode> CreateNodes()
         {
-            return _settings.NodeSettings.Select(CreateNode).ToList();
+            return _settings.NodeSettings.Select(x=> CreateNode(x, _settings.SimulationSettings.RoutingAlgorithm)).ToList();
         }
 
         // ReSharper disable once MemberCanBeMadeStatic.Local
-        private INode CreateNode(NodeSettings nodeSettings)
+        private INode CreateNode(NodeSettings nodeSettings, string routingAlgorithm)
         {
-            return new IpNode(nodeSettings, _settings.TimeDelta);
+            return new IpNode(nodeSettings, _settings.TimeDelta, routingAlgorithm);
         }
     }
 }

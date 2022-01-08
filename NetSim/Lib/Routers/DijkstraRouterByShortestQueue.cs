@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using NetSim.Providers;
 
 namespace NetSim.Lib.Routers
 {
-	public class DijkstraRouterByLoads : DijkstraRouterBase
+	public class DijkstraRouterByShortestQueue : DijkstraRouterBase
 	{
 		protected override void SetNodes(IReadOnlyCollection<INode> net)
 		{
@@ -16,19 +17,19 @@ namespace NetSim.Lib.Routers
 						.Where(x => !x.Equals(node)));
 				foreach (var neighbour in neighbours)
 				{
-					var weight = 1;
+					var weight = 0;
 
                     var nodeMetrics = neighbour.GetNodeState();
 
-					if (neighbour.Load() > 0.9)
-					weight = 10000;
-
 					var connection = node.GetConnections().First(x => x.GetConnectedNodes().Any(x => x == neighbour));
 
-					if (connection.GetLoad() > 0.9)
-						weight = 10000;
+					var queue = nodeMetrics.MessagesInQueueSize / nodeMetrics.Throughput + connection.TimeWaiting;
+					if (queue < 5 )
+						weight = 1;
+					else weight = (int)queue;
 
-					_graph.AddEdge(int.Parse(node.GetId()), int.Parse(neighbour.GetId()), weight);
+					if (!ResourceProvider.SimulationSettings.UseOnlyIsActiveNodes || neighbour.IsActive())
+						_graph.AddEdge(int.Parse(node.GetId()), int.Parse(neighbour.GetId()), weight);
 				}
 			}
 		}
