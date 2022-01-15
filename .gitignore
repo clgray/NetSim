@@ -345,3 +345,4 @@ healthchecksdb
 /Result/Netsim-*
 /Result/log*.txt
 *.rar
+/NetSimVisualizer/300Nodes/.ipynb_checkpoints

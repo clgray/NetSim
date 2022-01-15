@@ -5,7 +5,7 @@ using NetSim.Providers;
 
 namespace NetSim.Lib.Routers
 {
-	public class DijkstraRouterF6 : DijkstraRouterBase
+	public class СompositeDijkstraRouterF6 : DijkstraRouterBase
 	{
 		protected override void SetNodes(IReadOnlyCollection<INode> net)
 		{
@@ -24,21 +24,27 @@ namespace NetSim.Lib.Routers
 					var ξ = nodeMetrics.Throughput;
 					var x0 = nodeMetrics.MessagesInQueueSize ;
 					var L = nodeMetrics.Throughput * ResourceProvider.SimulationSettings.MultiplierThresholdToBlock;
-					//var ε = nodeMetrics.MessagesReceived;
-					//var ξ = nodeMetrics.MessagesSent;
-					//var x0 = nodeMetrics.MessagesInQueue;
-					//var L = 5;
+
 					if (!ResourceProvider.SimulationSettings.UseOnlyIsActiveNodes || neighbour.IsActive())
 					{
-						var weight = 0.001;
+						var weight = 0.01;
+						var connection = node.GetConnections().First(x => x.GetConnectedNodes().Any(x => x == neighbour));
+
+						var queue = nodeMetrics.MessagesInQueueSize / nodeMetrics.Throughput + connection.TimeWaiting;
+						if (queue < 1)
+							queue = 1;
+						
 						if (x0 > L / 2)
 						{
 							var t = Calculation.SolveEquation6(x0, ε, ξ, 1, L, 50, ResourceProvider.SimulationSettings.λ);
 							if (t < 0)
-								weight = x0 < L ? 0.001 : 1000;
-							else
-								weight = 1 / t;
+								t = x0 > L ? 1 : 100;
+							weight = 1 / t;
 						}
+
+						weight = (weight * queue);
+						//if (weight < 1)
+						//	weight = 1;
 
 						_graph.AddEdge(int.Parse(node.GetId()), int.Parse(neighbour.GetId()), weight);
 					}

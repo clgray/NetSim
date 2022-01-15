@@ -80,6 +80,8 @@ namespace NetSim
 				options.UseOnlyIsActiveNodes ?? networkSettings.SimulationSettings.UseOnlyIsActiveNodes;
 			networkSettings.MessagesSettings.Quantity =
 				options.MessagesQuantity ?? networkSettings.MessagesSettings.Quantity;
+
+			networkSettings.SimulationSettings.λ = options.λ;
 		}
 	}
 }

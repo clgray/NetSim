@@ -47,6 +47,7 @@ namespace NetSim.Lib.Networking
 
 				ResourceProvider.RouterProvider.GetRouter(_settings.SimulationSettings.RoutingAlgorithm)
 					.RebuildRoutes();
+				var connectionsCount = 0;
 				foreach (var node in nodes)
 				{
 					node.ProgressQueue(currentTime);
@@ -55,6 +56,8 @@ namespace NetSim.Lib.Networking
 					{
 						connection.ProgressQueue(currentTime);
 					}
+
+					connectionsCount += connections.Count;
 				}
 
 				var messagesFailedCurrentIteration = ResourceProvider.MessagesDeliverFailed - currentFailedMessages;

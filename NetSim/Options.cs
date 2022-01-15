@@ -7,6 +7,9 @@ namespace NetSim
 {
 	class Options
 	{
+		[Option('p', "percolation", Required = false, Default =  0.95, HelpText = "Percolation Threshold")]
+		public double λ { get; set; }
+
 		[Option('i', "input", Required = true, Default = "networkSettings.json",
 			HelpText = "Input file with NetworkSettings.")]
 		public string InputFile { get; set; }
@@ -32,7 +35,7 @@ namespace NetSim
 		public int? NumberOfGenerations { get; set; }
 
 
-		[Option('n', "MessagesToGenerateOnInit", Required = false, Default = 1,
+		[Option('g', "MessagesToGenerateOnInit", Required = false, Default = 1,
 			HelpText = "ConstantMessageGeneratorSettings MessagesToGenerateOnInit")]
 		public int? MessagesToGenerateOnInit { get; set; }
 

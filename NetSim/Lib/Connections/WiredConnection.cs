@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using NetSim.Model.Connection;
 using NetSim.Model.Message;
 using NetSim.Providers;
@@ -48,7 +47,7 @@ namespace NetSim.Lib.Connections
 
 			var timeSpent = CalculateTimeSpent(data);
 
-			_queue.Enqueue(new MessageData()
+			_queue.Enqueue(new MessageData
 			{
 				Delay = timeSpent,
 				Message = data,
@@ -74,7 +73,7 @@ namespace NetSim.Lib.Connections
 			float waitTimer = 0;
 
 
-			var connectionMetrics = new ConnectionMetrics()
+			var connectionMetrics = new ConnectionMetrics
 			{
 				MessagesInQueue = _queue.Count,
 				Throughput = _settings.Bandwidth,
@@ -83,23 +82,14 @@ namespace NetSim.Lib.Connections
 				Tag = ResourceProvider.Tag,
 				MessagesReceived = _queue.Count - _messageInQueueCount
 			};
-			var maxDequeueCount = _queue.Count * 2;
 
-			while (waitTimer < _timeDelta && maxDequeueCount > 0)
+			while (waitTimer < _timeDelta)
 			{
-				var dataToTransmit = _queue.TryDequeue(out var data);
+				var dataToTransmit = _queue.TryPeek(out var data);
 
 				if (!dataToTransmit)
 				{
 					break;
-				}
-
-				maxDequeueCount--;
-
-				if (!data.Receiver.IsActive())
-				{
-					_queue.Enqueue(data);
-					continue;
 				}
 
 				var capacity = _timeDelta - waitTimer < 0 ? 0 : _timeDelta - waitTimer;
@@ -111,11 +101,9 @@ namespace NetSim.Lib.Connections
 				{
 					data.Message.TimeSpent = (currentTime - data.Message.Time).TotalSeconds;
 					data.Receiver.Receive(data.Message);
+					_queue.Dequeue();
 				}
-				else
-				{
-					_queue.Enqueue(data);
-				}
+
 			}
 
 			_load = waitTimer / _timeDelta;

@@ -18,6 +18,7 @@ namespace NetSim.Model
 
 	public class SimulationSettings
 	{
+		public double λ { get; set; }
 		public string RoutingAlgorithm { get; set; }
 		public double MultiplierThresholdToBlock { get; set; }
 		public double FractionThresholdToUnBlock { get; set; }
@@ -28,7 +29,7 @@ namespace NetSim.Model
 		public override string ToString()
 		{
 			return
-				$"RoutingAlgorithm {RoutingAlgorithm}, MultiplierThresholdToBlock {MultiplierThresholdToBlock}, FractionThresholdToUnBlock {FractionThresholdToUnBlock}, UseOnlyIsActiveNodes {UseOnlyIsActiveNodes}, NumberOfGenerations {NumberOfGenerations}";
+				$"RoutingAlgorithm {RoutingAlgorithm}, MultiplierThresholdToBlock {MultiplierThresholdToBlock}, FractionThresholdToUnBlock {FractionThresholdToUnBlock}, UseOnlyIsActiveNodes {UseOnlyIsActiveNodes}, NumberOfGenerations {NumberOfGenerations} λ {λ}";
 		}
 	}
 }
