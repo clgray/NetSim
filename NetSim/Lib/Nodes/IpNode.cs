@@ -172,11 +172,9 @@ namespace NetSim.Lib.Nodes
 			_connections.Add(connection);
 		}
 
-		public bool IsAvailable()
+		public bool IsInfected()
 		{
-			throw new NotSupportedException();
-			// return (nodeLoad <= threshold) || _messagesInQueueSize <= _settings.Throughput * 10;
-			// return _messagesInQueueSize <= _settings.Throughput * 50;
+			return _isInfected;
 		}
 
 		public float Load()
@@ -209,14 +207,44 @@ namespace NetSim.Lib.Nodes
 		{
 			_isActive = false;
 		}
+		public void Infect()
+		{
+			_isInfected = true;
+		}
+		public void Heal()
+		{
+			_isInfected = false;
+		}
+
+		
+		public bool IsBlockedOnStep { get; set; }
+		public bool IsUnBlockedOnStep { get; set; }
+		private bool isActiveOnStepBegin { get; set; }
+
+		public void IterationStart()
+		{
+			isActiveOnStepBegin = IsActive();
+			IsBlockedOnStep = false;
+			IsUnBlockedOnStep = false;
+		}
+		public void IterationEnd()
+		{
+			if (isActiveOnStepBegin != _isActive)
+			{
+				IsBlockedOnStep = !_isActive;
+				IsUnBlockedOnStep = _isActive;
+			}
+		}
 
 		private bool _isActive = true;
+		private bool _isInfected = false;
 
 
 		private float CalculateTime(Message message)
 		{
 			return message.Size / _settings.Throughput;
 		}
+		
 
 		private IConnection GetConnectionToNode(INode node)
 		{

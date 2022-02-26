@@ -55,7 +55,7 @@ namespace NetSim.Lib.Routers.Percolation
 			return s;
 		}
 
-		public static double Intergal9(double t, double x0, double ε, double ξ, double τ, double L, int M, double l)
+		public static double Intergal9(double t, double x0, double ε, double ξ, double τ, double L, int M, double λ)
 		{
 			double n = 100;
 			double h = x0 / n;
@@ -65,13 +65,31 @@ namespace NetSim.Lib.Routers.Percolation
 				s += h * ρ_2_9(h * i, t, x0, ε, ξ, τ, L, M);
 			}
 
-			h = (l - x0) / n;
+			h = (λ - x0) / n;
 			for (var i = 1; i <= n; i++)
 			{
 				s += h * ρ_1_9(h * i + x0, t, x0, ε, ξ, τ, L, M);
 			}
 
 			return s.Real;
+		}
+		public static double Intergal9_3(double t, double x0, double ε, double ξ, double τ, double L, int M, double λ)
+		{
+			double n = 100;
+			double h = x0 / n;
+			double s = 0;
+			for (var i = 1; i <= n; i++)
+			{
+				s += h * ρ_2(h * i, t, x0, ε, ξ, τ, L, M);
+			}
+
+			h = (λ - x0) / n;
+			for (var i = 1; i <= n; i++)
+			{
+				s += h * ρ_1(h * i + x0, t, x0, ε, ξ, τ, L, M);
+			}
+
+			return s;
 		}
 
 		public static double SolveEquation6(double x0, double ε, double ξ, double τ, double L, int M, double λ)
@@ -85,24 +103,23 @@ namespace NetSim.Lib.Routers.Percolation
 			return value;
 		}
 
-		public static double SolveEquation6_q(double x0, double ε, double ξ, double τ, double L, int M)
+		public static double SolveEquation9(double x0, double ε, double ξ, double τ, double L, int M, double λ)
 		{
-			var key = $"{x0}, {ε}, {ξ}, {τ}, {L}, {M}";
-			if (SolveEquation6Cache.ContainsKey(key))
-				return SolveEquation6Cache[key];
-
-			var value = Bisection(0.1, 1000, 0.01, t => Intergal6(t, x0, ε, ξ, τ, L, M) - 0.95);
-			SolveEquation6Cache[key] = value;
-			return value;
-		}
-
-		public static double SolveEquation9(double x0, double ε, double ξ, double τ, double L, int M, double l)
-		{
-			var key = $"{x0}, {ε}, {ξ}, {τ}, {L}, {M}, {l}";
-			if (SolveEquation6Cache.ContainsKey(key))
+			var key = $"{x0}, {ε}, {ξ}, {τ}, {L}, {M}, {λ}";
+			if (SolveEquation9Cache.ContainsKey(key))
 				return SolveEquation9Cache[key];
 
-			var value = Bisection(0.1, 1000, 0.01, t =>0.05 - Intergal9(t, x0, ε, ξ, τ, L, M, l));
+			var value = Bisection(0.1, 1000, 0.01, t =>0.05 - Intergal9(t, x0, ε, ξ, τ, L, M, λ));
+			SolveEquation9Cache[key] = value;
+			return value;
+		}
+		public static double SolveEquation9_3(double x0, double ε, double ξ, double τ, double L, int M, double λ)
+		{
+			var key = $"{x0}, {ε}, {ξ}, {τ}, {L}, {M}, {λ}";
+			if (SolveEquation9Cache.ContainsKey(key))
+				return SolveEquation9Cache[key];
+
+			var value = Bisection(0.1, 1000, 0.01, t => 0.05 - Intergal9_3(t, x0, ε, ξ, τ, L, M, λ));
 			SolveEquation9Cache[key] = value;
 			return value;
 		}

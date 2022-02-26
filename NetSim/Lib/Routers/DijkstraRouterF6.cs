@@ -28,7 +28,7 @@ namespace NetSim.Lib.Routers
 					//var ξ = nodeMetrics.MessagesSent;
 					//var x0 = nodeMetrics.MessagesInQueue;
 					//var L = 5;
-					if (!ResourceProvider.SimulationSettings.UseOnlyIsActiveNodes || neighbour.IsActive())
+					if ((!ResourceProvider.SimulationSettings.UseOnlyIsActiveNodes || neighbour.IsActive()) && !neighbour.IsInfected())
 					{
 						var weight = 0.001;
 						if (x0 > L / 2)

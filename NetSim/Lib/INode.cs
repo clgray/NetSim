@@ -1,8 +1,6 @@
 ﻿using NetSim.Model.Message;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 using NetSim.Model;
 using NetSim.Model.Node;
 
@@ -15,10 +13,16 @@ namespace NetSim.Lib
 		public string GetId();
 		public List<IConnection> GetConnections();
 		public void AddConnection(IConnection connection);
-		public bool IsAvailable();
+		public bool IsInfected();
 		public float Load();
 		public NodeMetrics GetNodeState();
 		public bool IsActive();
 		void Disable();
+		void IterationStart();
+		void IterationEnd();
+		public bool IsBlockedOnStep { get;}
+		public bool IsUnBlockedOnStep { get;}
+		void Infect();
+		void Heal();
 	}
 }

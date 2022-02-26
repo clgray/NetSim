@@ -19,7 +19,7 @@ namespace NetSim.Lib.Routers
 				{
 					var weight = 1;
 
-					if (!ResourceProvider.SimulationSettings.UseOnlyIsActiveNodes || neighbour.IsActive())
+					if ((!ResourceProvider.SimulationSettings.UseOnlyIsActiveNodes || neighbour.IsActive()) && !neighbour.IsInfected())
 						_graph.AddEdge(int.Parse(node.GetId()), int.Parse(neighbour.GetId()), weight);
 				}
 			}

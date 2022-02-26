@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NetSim.Lib.VirusGenerators;
 using NetSim.Model;
 using NetSim.Model.Message;
 using NetSim.Model.Node;
 using NetSim.Providers;
+using RestSharp.Deserializers;
 using Serilog;
 
 namespace NetSim.Lib.Networking
@@ -15,10 +17,12 @@ namespace NetSim.Lib.Networking
 		private readonly IMessageGenerator _messageGenerator;
 		private List<Message> _messagesTotal;
 		private List<NodeMetrics> _nodeMetrics;
+		private readonly IVirusGenerator _virusGenerator;
 
-		public DefaultNetworking(NetworkSettings networkSettings, IMessageGenerator messageGenerator)
+		public DefaultNetworking(NetworkSettings networkSettings, IMessageGenerator messageGenerator, IVirusGenerator virusGenerator)
 		{
 			_messageGenerator = messageGenerator;
+			_virusGenerator = virusGenerator;
 			_settings = networkSettings;
 			_messagesTotal = new List<Message>();
 			_nodeMetrics = new List<NodeMetrics>();
@@ -36,7 +40,7 @@ namespace NetSim.Lib.Networking
 
 			var nodes = ResourceProvider.NodeProvider.GetNodes();
 			var nodesIds = nodes.Select(x => x.GetId()).ToList();
-
+			_virusGenerator.Init();
 			var messages = GenerateMessagesInit(nodesIds, currentTime, nodes);
 			_messagesTotal.AddRange(messages);
 			ResourceProvider.MessagesUnDelivered += messages.Count;
@@ -44,6 +48,10 @@ namespace NetSim.Lib.Networking
 			for (var i = 0; !stopSignal; i++)
 			{
 				currentTime = startTime.AddSeconds(i * _settings.TimeDelta);
+				foreach (var node in nodes)
+				{
+					node.IterationStart();
+				}
 
 				ResourceProvider.RouterProvider.GetRouter(_settings.SimulationSettings.RoutingAlgorithm)
 					.RebuildRoutes();
@@ -59,6 +67,18 @@ namespace NetSim.Lib.Networking
 
 					connectionsCount += connections.Count;
 				}
+
+				var blocked = 0;
+				var unBlocked = 0;
+				foreach (var node in nodes)
+				{
+					node.IterationEnd();
+					if (node.IsBlockedOnStep) blocked++;
+					if (node.IsUnBlockedOnStep) unBlocked++;
+				}
+
+				ResourceProvider.BlockedNodesByStep = blocked / (double)nodes.Count;
+				ResourceProvider.UnBlockedNodesByStep = blocked / (double)nodes.Count;
 
 				var messagesFailedCurrentIteration = ResourceProvider.MessagesDeliverFailed - currentFailedMessages;
 				currentFailedMessages = ResourceProvider.MessagesDeliverFailed;
@@ -127,7 +147,7 @@ namespace NetSim.Lib.Networking
 				_messagesTotal.AddRange(messages);
 				ResourceProvider.MessagesUnDelivered += messages.Count;
 			}
-
+			_virusGenerator.GenerateViruses(time);
 			// TODO: Get nodes state and rebuild routes here
 		}
 
@@ -136,9 +156,5 @@ namespace NetSim.Lib.Networking
 			ResourceProvider.InitProviders(_settings, tag);
 		}
 
-		private void UpdateNodeStates()
-		{
-			_nodeMetrics = ResourceProvider.NodeProvider.GetNodes().Select(x => x.GetNodeState()).ToList();
-		}
 	}
 }

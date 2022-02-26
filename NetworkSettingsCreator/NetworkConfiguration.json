@@ -10,7 +10,7 @@
 		},
 		"ConnectionsRange": {
 			"Min": 2,
-			"Max": 5
+			"Max": 3
 		}
 	},
 	"ConnectionConfiguration": {

@@ -343,6 +343,13 @@ healthchecksdb
 /NetSim/Properties/launchSettings.json
 /NetSimVisualizer/.ipynb_checkpoints
 /Result/Netsim-*
-/Result/log*.txt
+/Result/*.txt
 *.rar
 /NetSimVisualizer/300Nodes/.ipynb_checkpoints
+.ipynb_checkpoints
+/Result/*/Netsim-Message-Metrics*
+/Result/*/Netsim-Node-Metrics-queue*
+/Result/*/Netsim-Node-Metrics-load*
+/Result/*/Netsim-Node-Metrics-blocked*
+/Result/*/Netsim-Connection-Metrics*
+/Result/*/logs*.txt

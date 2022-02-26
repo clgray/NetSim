@@ -215,7 +215,7 @@ namespace NetSim.Lib.Routers
                         continue;
 
                     // Check if Node are overloaded
-                    if (!childDijkstraNode.Node.IsAvailable())
+                    if (!childDijkstraNode.Node.IsInfected())
                     {
                         continue;
                     }

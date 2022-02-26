@@ -5,6 +5,7 @@ using NetSim.Lib.MessageGenerators;
 using NetSim.Lib.Networking;
 using System.Text.Json;
 using CommandLine;
+using NetSim.Lib.VirusGenerators;
 using NetSim.Model;
 using Serilog;
 
@@ -51,8 +52,11 @@ namespace NetSim
 			networkSettings.SimulationSettings ??= new SimulationSettings();
 
 			InitSettings(options, networkSettings);
-
-			var network = new DefaultNetworking(networkSettings, new ConstantMessageGenerator());
+			IVirusGenerator virusGenerator =
+				networkSettings.SimulationSettings.VirusGeneratorSettings.VirusGeneratorAlgorithm == "percent"
+					? new PercentVirusGenerator()
+					: new DefaultVirusGenerator();
+			var network = new DefaultNetworking(networkSettings, new ConstantMessageGenerator(), virusGenerator);
 			Log.Information("Start");
 			Log.Information(networkSettings.SimulationSettings.ToString());
 			Log.Information("Quantity " + networkSettings.MessagesSettings.Quantity);
