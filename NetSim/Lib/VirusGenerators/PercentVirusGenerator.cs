@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using NetSim.Model;
 using NetSim.Providers;
 
 namespace NetSim.Lib.VirusGenerators
@@ -8,11 +9,12 @@ namespace NetSim.Lib.VirusGenerators
 	{
 		private PercentVirusGeneratorSettings _generatorSettings;
 
+		public PercentVirusGenerator(VirusGeneratorSettings settings)
+		{
+			ReadGeneratorSettings(settings);
+		}
 		public void Init()
 		{
-			ReadGeneratorSettings();
-
-
 			InfectNodesInternal(_generatorSettings.InfectNodesOnInit);
 		}
 
@@ -29,7 +31,7 @@ namespace NetSim.Lib.VirusGenerators
 
 			var notInfectedNodes = nodes.Where(x => x.IsInfected() == false).ToArray();
 
-			var quantity = Math.Min(notInfectedNodes.Length, nodes.Count * infeсtPercent);
+			var quantity = Math.Max(1, (int)(notInfectedNodes.Length * infeсtPercent));
 			var infeсted = 0;
 			while (infeсted < quantity)
 			{
@@ -49,7 +51,7 @@ namespace NetSim.Lib.VirusGenerators
 
 			var infectedNodes = nodes.Where(x => x.IsInfected()).ToArray();
 
-			var quantity = Math.Min(infectedNodes.Length, nodes.Count * healPercent);
+			var quantity = Math.Max(1, (int)(infectedNodes.Length * healPercent));
 			var heal = 0;
 			while (heal < quantity)
 			{
@@ -62,13 +64,13 @@ namespace NetSim.Lib.VirusGenerators
 			}
 		}
 
-		private void ReadGeneratorSettings()
+		private void ReadGeneratorSettings(VirusGeneratorSettings settings)
 		{
 			_generatorSettings = new PercentVirusGeneratorSettings()
 			{
-				InfectNodesOnInit = ResourceProvider.SimulationSettings.VirusGeneratorSettings.InfectNodesOnInit,
-				HealPercent = ResourceProvider.SimulationSettings.VirusGeneratorSettings.HealPercent,
-				InfeсtPercent = ResourceProvider.SimulationSettings.VirusGeneratorSettings.InfeсtPercent
+				InfectNodesOnInit = settings.InfectNodesOnInit,
+				HealPercent = settings.HealPercent,
+				InfeсtPercent = settings.InfeсtPercent
 			};
 		}
 	}

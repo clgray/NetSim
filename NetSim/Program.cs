@@ -54,7 +54,7 @@ namespace NetSim
 			InitSettings(options, networkSettings);
 			IVirusGenerator virusGenerator =
 				networkSettings.SimulationSettings.VirusGeneratorSettings.VirusGeneratorAlgorithm == "percent"
-					? new PercentVirusGenerator()
+					? new PercentVirusGenerator(networkSettings.SimulationSettings.VirusGeneratorSettings)
 					: new DefaultVirusGenerator();
 			var network = new DefaultNetworking(networkSettings, new ConstantMessageGenerator(), virusGenerator);
 			Log.Information("Start");
@@ -86,6 +86,10 @@ namespace NetSim
 				options.MessagesQuantity ?? networkSettings.MessagesSettings.Quantity;
 
 			networkSettings.SimulationSettings.λ = options.λ;
+			networkSettings.SimulationSettings.VirusGeneratorSettings.HealPercent = 0.01;
+			networkSettings.SimulationSettings.VirusGeneratorSettings.InfeсtPercent = 0.03;
+			networkSettings.SimulationSettings.VirusGeneratorSettings.InfectNodesOnInit = 0.01;
+			networkSettings.SimulationSettings.VirusGeneratorSettings.VirusGeneratorAlgorithm = "percent";
 		}
 	}
 }

@@ -200,7 +200,7 @@ namespace NetSim.Lib.Nodes
 				_isActive = false;
 			if (_messagesInQueueSize <= L * ResourceProvider.SimulationSettings.FractionThresholdToUnBlock)
 				_isActive = true;
-			return _isActive;
+			return _isActive && !_isInfected;
 		}
 
 		public void Disable()

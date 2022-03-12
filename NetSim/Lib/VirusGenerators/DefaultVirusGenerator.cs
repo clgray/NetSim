@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using NetSim.Model;
 using NetSim.Providers;
 
 namespace NetSim.Lib.VirusGenerators

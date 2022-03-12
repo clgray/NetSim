@@ -10,15 +10,15 @@ namespace NetSim.Lib.Routers
 		protected override void SetNodes(IReadOnlyCollection<INode> net)
 		{
 			_graph = new Graph(net.Count);
-			var ε = ResourceProvider.BlockedNodesByStep;
-			var ξ = ResourceProvider.UnBlockedNodesByStep;
-			var blocked = net.Count(x => !x.IsActive());
-			var x0 = blocked / (double)net.Count;
+			var ε = ResourceProvider.SimulationSettings.VirusGeneratorSettings.InfeсtPercent;
+			var ξ = ResourceProvider.SimulationSettings.VirusGeneratorSettings.HealPercent;
+			var infected = net.Count(x => x.IsInfected());
+			var x0 = infected / (double)net.Count;
 			var L = 1;
 			var t = 1000.0;
 			if (x0 != 0 && ε * ξ > 0)
 			{
-				t = Calculation.SolveEquation9_3(x0, ε, ξ, 1, L, 50, ResourceProvider.SimulationSettings.λ);
+				t = Calculation.SolveEquation8_3(x0, ε, ξ, 1, L, 50, ResourceProvider.SimulationSettings.λ);
 			}
 
 			if (t < 0)

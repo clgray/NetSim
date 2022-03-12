@@ -1,4 +1,5 @@
 ﻿using System;
+using NetSim.Model;
 
 namespace NetSim.Lib.VirusGenerators
 {

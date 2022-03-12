@@ -41,7 +41,7 @@ namespace NetSimTests.Percalation
 		{
 			for (int i = 1; i < 100; i++)
 			{
-				Console.WriteLine(Calculation.Intergal9(i/10.0, 2, 3, 2, 1, 50, 50, 50));
+				Console.WriteLine(Calculation.Intergal8(i/10.0, 2, 3, 2, 1, 50, 50, 50));
 			}
 
 			Assert.AreEqual(42, 41);

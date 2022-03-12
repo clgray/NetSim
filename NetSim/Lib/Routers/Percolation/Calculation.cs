@@ -7,7 +7,7 @@ namespace NetSim.Lib.Routers.Percolation
 {
 	public static class Calculation
 	{
-		private static double ρ_1(double x, double t, double x0, double ε, double ξ, double τ, double L, int M)
+		private static double ρ_1_3a(double x, double t, double x0, double ε, double ξ, double τ, double L, int M)
 		{
 			var r = -2 / L * Exp(-Pow(ε - ξ, 2) * t / (2 * τ * (Pow(ε, 2) + Pow(ξ, 2)))) *
 			        Exp((ε - ξ) * (x - x0) / (Pow(ε, 2) + Pow(ξ, 2)));
@@ -21,7 +21,7 @@ namespace NetSim.Lib.Routers.Percolation
 			return r * s;
 		}
 
-		private static double ρ_2(double x, double t, double x0, double ε, double ξ, double τ, double L, int M)
+		private static double ρ_2_3a(double x, double t, double x0, double ε, double ξ, double τ, double L, int M)
 		{
 			var r = -2 / L * Exp(-Pow(ε - ξ, 2) * t / (2 * τ * (Pow(ε, 2) + Pow(ξ, 2)))) *
 			        Exp((ε - ξ) * (x - x0) / (Pow(ε, 2) + Pow(ξ, 2)));
@@ -43,50 +43,50 @@ namespace NetSim.Lib.Routers.Percolation
 			double s = 0;
 			for (var i = 1; i <= n; i++)
 			{
-				s += h * ρ_2(h * i, t, x0, ε, ξ, τ, L, M);
+				s += h * ρ_2_3a(h * i, t, x0, ε, ξ, τ, L, M);
 			}
 
 			h = (L - x0) / n;
 			for (var i = 1; i <= n; i++)
 			{
-				s += h * ρ_1(h * i + x0, t, x0, ε, ξ, τ, L, M);
+				s += h * ρ_1_3a(h * i + x0, t, x0, ε, ξ, τ, L, M);
 			}
 
 			return s;
 		}
 
-		public static double Intergal9(double t, double x0, double ε, double ξ, double τ, double L, int M, double λ)
+		public static double Intergal8(double t, double x0, double ε, double ξ, double τ, double L, int M, double λ)
 		{
 			double n = 100;
 			double h = x0 / n;
 			Complex s = 0;
 			for (var i = 1; i <= n; i++)
 			{
-				s += h * ρ_2_9(h * i, t, x0, ε, ξ, τ, L, M);
+				s += h * ρ_2_8a(h * i, t, x0, ε, ξ, τ, L, M);
 			}
 
 			h = (λ - x0) / n;
 			for (var i = 1; i <= n; i++)
 			{
-				s += h * ρ_1_9(h * i + x0, t, x0, ε, ξ, τ, L, M);
+				s += h * ρ_1_8a(h * i + x0, t, x0, ε, ξ, τ, L, M);
 			}
 
 			return s.Real;
 		}
-		public static double Intergal9_3(double t, double x0, double ε, double ξ, double τ, double L, int M, double λ)
+		public static double Intergal3(double t, double x0, double ε, double ξ, double τ, double L, int M, double λ)
 		{
 			double n = 100;
 			double h = x0 / n;
 			double s = 0;
 			for (var i = 1; i <= n; i++)
 			{
-				s += h * ρ_2(h * i, t, x0, ε, ξ, τ, L, M);
+				s += h * ρ_2_3a(h * i, t, x0, ε, ξ, τ, L, M);
 			}
 
 			h = (λ - x0) / n;
 			for (var i = 1; i <= n; i++)
 			{
-				s += h * ρ_1(h * i + x0, t, x0, ε, ξ, τ, L, M);
+				s += h * ρ_1_3a(h * i + x0, t, x0, ε, ξ, τ, L, M);
 			}
 
 			return s;
@@ -103,28 +103,28 @@ namespace NetSim.Lib.Routers.Percolation
 			return value;
 		}
 
-		public static double SolveEquation9(double x0, double ε, double ξ, double τ, double L, int M, double λ)
+		public static double SolveEquation8(double x0, double ε, double ξ, double τ, double L, int M, double λ)
 		{
 			var key = $"{x0}, {ε}, {ξ}, {τ}, {L}, {M}, {λ}";
 			if (SolveEquation9Cache.ContainsKey(key))
 				return SolveEquation9Cache[key];
 
-			var value = Bisection(0.1, 1000, 0.01, t =>0.05 - Intergal9(t, x0, ε, ξ, τ, L, M, λ));
+			var value = Bisection(0.1, 1000, 0.01, t =>0.95 - Intergal8(t, x0, ε, ξ, τ, L, M, λ));
 			SolveEquation9Cache[key] = value;
 			return value;
 		}
-		public static double SolveEquation9_3(double x0, double ε, double ξ, double τ, double L, int M, double λ)
+		public static double SolveEquation8_3(double x0, double ε, double ξ, double τ, double L, int M, double λ)
 		{
 			var key = $"{x0}, {ε}, {ξ}, {τ}, {L}, {M}, {λ}";
 			if (SolveEquation9Cache.ContainsKey(key))
 				return SolveEquation9Cache[key];
 
-			var value = Bisection(0.1, 1000, 0.01, t => 0.05 - Intergal9_3(t, x0, ε, ξ, τ, L, M, λ));
+			var value = Bisection(0.1, 1000, 0.01, t => 0.95 - Intergal3(t, x0, ε, ξ, τ, L, M, λ));
 			SolveEquation9Cache[key] = value;
 			return value;
 		}
 
-		private static Complex ρ_1_9(double x, double t, double x0, double ε, double ξ, double τ, double L, int M)
+		private static Complex ρ_1_8a(double x, double t, double x0, double ε, double ξ, double τ, double L, int M)
 		{
 			var a = (Pow(ε, 2) + Pow(ξ, 2)) / 2 * τ;
 			var b = (ε - ξ) / 4*τ;
@@ -144,7 +144,7 @@ namespace NetSim.Lib.Routers.Percolation
 			return r * s;
 		}
 
-		private static Complex ρ_2_9(double x, double t, double x0, double ε, double ξ, double τ, double L, int M)
+		private static Complex ρ_2_8a(double x, double t, double x0, double ε, double ξ, double τ, double L, int M)
 		{
 			var a = (Pow(ε, 2) + Pow(ξ, 2)) / 2 * τ;
 			var b = (ε - ξ) / 4*τ;
