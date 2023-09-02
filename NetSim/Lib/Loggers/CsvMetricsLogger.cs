@@ -78,6 +78,12 @@ namespace NetSim.Lib.Loggers
             {
 	            sw.WriteLine(blocked);
             }
+            var isInfected = string.Join(',', _nodeMetrics.Select(x => x.IsInfected ? 1 : 0));
+
+            using (var sw = new StreamWriter($"{LogPath}/{FilePrefix}Node-Metrics-IsInfected-{Tag}", true))
+            {
+	            sw.WriteLine(isInfected);
+            }
             _nodeMetrics.Clear();
         }
 

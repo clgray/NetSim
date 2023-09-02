@@ -23,7 +23,8 @@ namespace NetSim.Providers
 				{ "composite", new СompositeDijkstraRouterF6() },
 				{ "dfs", new DFSRouter() },
 				{ "allnet8", new AllNetDijkstraRouterF8() },
-				{ "allnet3", new AllNetDijkstraRouterF3() }
+				{ "allnet3", new AllNetDijkstraRouterF3() },
+				{ "allnet10", new AllNetDijkstraRouterF10() }
 			};
 		}
 

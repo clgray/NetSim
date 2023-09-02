@@ -46,7 +46,8 @@ namespace NetSim.Lib.Nodes
 				Tag = ResourceProvider.Tag,
 				MessagesReceived = _messagesReceivePerStep,
 				MessagesReceivedSize = _messagesReceiveSizePerStep,
-				IsActive = IsActive()
+				IsActive = IsActive(),
+				IsInfected = IsInfected()
 			};
 			_messagesReceiveSizePerStep = 0;
 			_messagesReceivePerStep = 0;
@@ -229,7 +230,7 @@ namespace NetSim.Lib.Nodes
 		}
 		public void IterationEnd()
 		{
-			if (isActiveOnStepBegin != _isActive)
+			if (isActiveOnStepBegin != IsActive())
 			{
 				IsBlockedOnStep = !_isActive;
 				IsUnBlockedOnStep = _isActive;

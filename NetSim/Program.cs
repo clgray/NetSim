@@ -86,10 +86,10 @@ namespace NetSim
 				options.MessagesQuantity ?? networkSettings.MessagesSettings.Quantity;
 
 			networkSettings.SimulationSettings.λ = options.λ;
-			networkSettings.SimulationSettings.VirusGeneratorSettings.HealPercent = 0.01;
-			networkSettings.SimulationSettings.VirusGeneratorSettings.InfeсtPercent = 0.03;
+			networkSettings.SimulationSettings.VirusGeneratorSettings.HealPercent = 0.005;
+			networkSettings.SimulationSettings.VirusGeneratorSettings.InfeсtPercent = 0.01;
 			networkSettings.SimulationSettings.VirusGeneratorSettings.InfectNodesOnInit = 0.01;
-			networkSettings.SimulationSettings.VirusGeneratorSettings.VirusGeneratorAlgorithm = "percent";
+			networkSettings.SimulationSettings.VirusGeneratorSettings.VirusGeneratorAlgorithm = "none";
 		}
 	}
 }

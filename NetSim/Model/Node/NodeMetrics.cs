@@ -41,5 +41,6 @@ namespace NetSim.Model.Node
         public string Tag { get; set; }
 
         public bool IsActive { get; set; }
+        public bool IsInfected { get; set; }
     }
 }

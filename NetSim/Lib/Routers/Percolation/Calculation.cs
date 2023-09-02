@@ -102,6 +102,16 @@ namespace NetSim.Lib.Routers.Percolation
 			SolveEquation6Cache[key] = value;
 			return value;
 		}
+		public static double SolveEquation10(double x0, double ε, double ξ, double τ, double L, int M, double λ)
+		{
+			var key = $"{x0}, {ε}, {ξ}, {τ}, {L}, {M}, {λ}";
+			if (SolveEquation6Cache.ContainsKey(key))
+				return SolveEquation6Cache[key];
+
+			var value = Bisection(0.1, 1000, 0.01, t => λ - Intergal6(t, x0, ε, ξ, τ, L, M));
+			SolveEquation6Cache[key] = value;
+			return value;
+		}
 
 		public static double SolveEquation8(double x0, double ε, double ξ, double τ, double L, int M, double λ)
 		{

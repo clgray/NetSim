@@ -77,8 +77,8 @@ namespace NetSim.Lib.Networking
 					if (node.IsUnBlockedOnStep) unBlocked++;
 				}
 
-				ResourceProvider.BlockedNodesByStep = blocked / (double)nodes.Count;
-				ResourceProvider.UnBlockedNodesByStep = blocked / (double)nodes.Count;
+				ResourceProvider.BlockedNodesByStep = blocked;
+				ResourceProvider.UnBlockedNodesByStep = unBlocked;
 
 				var messagesFailedCurrentIteration = ResourceProvider.MessagesDeliverFailed - currentFailedMessages;
 				currentFailedMessages = ResourceProvider.MessagesDeliverFailed;
